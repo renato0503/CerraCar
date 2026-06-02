@@ -3,399 +3,1783 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CerraCar MVP - Gestão de Oficina & Auditoria Extrema</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <title>CerraCar - Sistema de Gestão & Auditoria Extrema</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#0b0f19',
+                            900: '#131c31',
+                            800: '#1e2943',
+                            700: '#33415c'
+                        }
+                    },
+                    borderRadius: {
+                        'xl': '16px',
+                        '2xl': '24px'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #080c14;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            overflow-x: hidden;
+        }
 
-    <!-- Main Device Wrapper -->
-    <div id="app-container">
-        
-        <!-- App Header (Visible on all screens) -->
-        <header class="app-header">
-            <div class="brand">
-                <div class="brand-logo">C</div>
-                <div class="brand-name">CerraCar</div>
-                <span class="brand-badge">MVP</span>
-            </div>
-            <div class="user-profile">
-                <div style="text-align: right; margin-right: 4px;">
-                    <p style="font-size: 11px; font-weight: 600; color: #fff;" id="header-user-role">Gerente</p>
-                    <p style="font-size: 9px; color: var(--text-muted);">Pátio Principal</p>
+        /* Glassmorphism custom blur filter */
+        .glass-card {
+            background: rgba(19, 28, 49, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+            box-shadow: 0 10px 30px -15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Screen Transitions */
+        .screen {
+            display: none;
+            animation: screenFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Webkit scrollbars customization */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Touch interaction optimizations */
+        .tap-highlight-transparent {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen">
+
+    <!-- Global App Layout Wrapper -->
+    <div class="min-h-screen flex flex-col md:flex-row relative">
+
+        <!-- ========================================== -->
+        <!-- DESKTOP FIXED SIDEBAR (md:flex)            -->
+        <!-- ========================================== -->
+        <aside class="w-64 h-screen fixed top-0 left-0 bg-slate-900 border-r border-slate-800/80 flex-col justify-between hidden md:flex z-40 p-5">
+            <div class="flex flex-col gap-6">
+                <!-- Branding -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/35">C</div>
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-white leading-none">CerraCar</h2>
+                        <span class="text-[9px] font-semibold text-emerald-400 tracking-wider uppercase">Auditável</span>
+                    </div>
                 </div>
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="Avatar" class="user-avatar" id="header-user-avatar">
+
+                <!-- Desktop Role Switcher -->
+                <div class="mt-2 p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Perfil de Acesso</label>
+                    <select id="desktop-role-select" class="w-full bg-slate-900 border border-slate-700/80 text-white rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer">
+                        <option value="gerente">📊 Administrador / Gerente</option>
+                        <option value="mecanico">🔧 Mecânico (Pátio)</option>
+                        <option value="cliente">👤 Cliente Final</option>
+                    </select>
+                </div>
+
+                <!-- Desktop Navigation Menu -->
+                <nav class="flex flex-col gap-1.5 mt-4" id="desktop-nav-menu">
+                    <!-- Loaded dynamically via JS -->
+                </nav>
+            </div>
+
+            <!-- User footer profile -->
+            <div class="flex items-center gap-3 p-2 border-t border-slate-800/80 mt-auto pt-4">
+                <img id="desktop-profile-img" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" class="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover" alt="Profile">
+                <div>
+                    <h4 id="desktop-profile-name" class="text-sm font-semibold text-white leading-tight">Rodrigo Alencar</h4>
+                    <span id="desktop-profile-title" class="text-xs text-slate-400">Gerente Geral</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ========================================== -->
+        <!-- MOBILE HEADER (Visible on md:hidden)        -->
+        <!-- ========================================== -->
+        <header class="md:hidden fixed top-0 left-0 right-0 h-16 bg-slate-900 border-b border-slate-800/80 px-4 flex items-center justify-between z-40">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center font-bold text-white shadow-md text-sm">C</div>
+                <span class="text-lg font-bold text-white tracking-tight">CerraCar</span>
+            </div>
+            
+            <!-- Mobile Role Switcher -->
+            <div class="flex items-center gap-1">
+                <select id="mobile-role-select" class="bg-slate-950 border border-slate-700/80 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer">
+                    <option value="gerente">Gerente</option>
+                    <option value="mecanico">Mecânico</option>
+                    <option value="cliente">Cliente</option>
+                </select>
             </div>
         </header>
 
-        <!-- App Main Content Window -->
-        <main class="app-content" id="app-main-content">
-            
-            <!-- 1. DASHBOARD SCREEN -->
-            <section id="screen-dashboard" class="screen active">
-                <h1 class="screen-title">Painel Geral</h1>
-                <p class="screen-subtitle">Visão de fluxo e funil da oficina</p>
-                
-                <!-- Funnel Cards -->
-                <div class="funnel-container">
-                    <div class="funnel-card active" data-status="all">
-                        <div class="funnel-header">
-                            <span class="funnel-title">Todos</span>
-                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <!-- ========================================== -->
+        <!-- MAIN CONTENT CONTAINER                    -->
+        <!-- ========================================== -->
+        <main class="flex-1 bg-slate-950 md:ml-64 px-4 py-6 md:p-8 pt-20 md:pt-8 min-h-screen pb-24 md:pb-8 flex flex-col">
+
+            <!-- ------------------------------------------------------------- -->
+            <!-- 1. DASHBOARD SCREEN (Gerente)                                 -->
+            <!-- ------------------------------------------------------------- -->
+            <section id="screen-dashboard" class="screen">
+                <div class="mb-6">
+                    <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Painel de Controle</h1>
+                    <p class="text-slate-400 text-sm md:text-base">Métricas em tempo real e funil operacional da oficina.</p>
+                </div>
+
+                <!-- Funnel Counts Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- Recepção -->
+                    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between cursor-pointer border-l-4 border-l-orange-500 funnel-card active" data-status="recepcao">
+                        <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Na Recepção</span>
+                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                         </div>
-                        <div class="funnel-count" id="count-all">0</div>
+                        <div class="text-3xl font-extrabold text-white" id="count-recepcao">0</div>
                     </div>
-                    <div class="funnel-card" data-status="recepcao">
-                        <div class="funnel-header">
-                            <span class="funnel-title">Na Recepção</span>
-                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <!-- Orçamento -->
+                    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between cursor-pointer border-l-4 border-l-indigo-500 funnel-card" data-status="orcamento">
+                        <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Em Orçamento</span>
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                         </div>
-                        <div class="funnel-count" id="count-recepcao">0</div>
+                        <div class="text-3xl font-extrabold text-white" id="count-orcamento">0</div>
                     </div>
-                    <div class="funnel-card" data-status="orcamento">
-                        <div class="funnel-header">
-                            <span class="funnel-title">Orçamento</span>
-                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <!-- No Box -->
+                    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between cursor-pointer border-l-4 border-l-indigo-400 funnel-card" data-status="execucao">
+                        <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>No Box (Serviço)</span>
+                            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
                         </div>
-                        <div class="funnel-count" id="count-orcamento">0</div>
+                        <div class="text-3xl font-extrabold text-white" id="count-execucao">0</div>
                     </div>
-                    <div class="funnel-card" data-status="execucao">
-                        <div class="funnel-header">
-                            <span class="funnel-title">Em Execução</span>
-                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    <!-- Pronto -->
+                    <div class="glass-card p-4 rounded-2xl flex flex-col justify-between cursor-pointer border-l-4 border-l-emerald-500 funnel-card" data-status="pronto">
+                        <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Pronto para Entrega</span>
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                         </div>
-                        <div class="funnel-count" id="count-execucao">0</div>
-                    </div>
-                    <div class="funnel-card" style="grid-column: span 2;" data-status="pronto">
-                        <div class="funnel-header">
-                            <span class="funnel-title">Pronto para Entrega</span>
-                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                        </div>
-                        <div class="funnel-count" id="count-pronto">0</div>
+                        <div class="text-3xl font-extrabold text-white" id="count-pronto">0</div>
                     </div>
                 </div>
 
-                <!-- Commercial Alerts Section -->
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                        Alertas Comerciais
+                <!-- Commercial Alerts -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                        Alertas Comerciais Relevantes
                     </h3>
-                </div>
-                <div id="alerts-container">
-                    <!-- Dynamic Alerts will be loaded here -->
+                    <div id="dashboard-alerts-container" class="space-y-3">
+                        <!-- Alerts rendered dynamically -->
+                    </div>
                 </div>
 
-                <!-- Active Vehicles List -->
-                <div class="section-header" style="margin-top: 20px;">
-                    <h3 class="section-title">Veículos Ativos</h3>
-                </div>
-                <div id="dashboard-vehicles-list">
-                    <!-- Vehicles will be populated by JS -->
+                <!-- Vehicles List -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Fila de Veículos Operacionais</h3>
+                        <span id="filter-indicator" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-indigo-400">Todos</span>
+                    </div>
+                    <div id="dashboard-vehicles-container" class="space-y-3">
+                        <!-- Dynamic list -->
+                    </div>
                 </div>
             </section>
 
-
-            <!-- 2. CHECK-IN SCREEN -->
+            <!-- ------------------------------------------------------------- -->
+            <!-- 2. CHECK-IN SCREEN (Gerente)                                   -->
+            <!-- ------------------------------------------------------------- -->
             <section id="screen-checkin" class="screen">
-                <h1 class="screen-title">Check-in</h1>
-                <p class="screen-subtitle">Recepção do veículo e registro de danos</p>
-                
-                <form id="checkin-form">
-                    <div class="form-group">
-                        <label class="form-label" for="input-placa">Placa do Veículo</label>
-                        <input type="text" id="input-placa" class="form-control" placeholder="Ex: ABC1D23" required style="text-transform: uppercase;">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="input-modelo">Marca & Modelo</label>
-                        <input type="text" id="input-modelo" class="form-control" placeholder="Ex: Honda Civic 2.0 EXL" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="input-km">Quilometragem (KM)</label>
-                        <input type="number" id="input-km" class="form-control" placeholder="Ex: 52400" required>
-                    </div>
+                <div class="mb-6">
+                    <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Check-in de Veículo</h1>
+                    <p class="text-slate-400 text-sm md:text-base">Gere o termo de vistoria inicial do pátio com registro fotográfico.</p>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="input-cliente">Nome do Cliente</label>
-                        <input type="text" id="input-cliente" class="form-control" placeholder="Ex: Carlos Eduardo" required>
-                    </div>
-
-                    <!-- 360 Visual Damage Registry -->
-                    <div class="form-group" style="margin-top: 24px;">
-                        <label class="form-label">Inspeção Visual 360°</label>
-                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -4px;">Carregue fotos ou use os botões "MOCK" para simular</p>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Form inputs -->
+                    <div class="lg:col-span-1 glass-card p-5 rounded-2xl flex flex-col gap-4">
+                        <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2">Informações Cadastrais</h3>
                         
-                        <div class="inspection-grid">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Placa do Veículo</label>
+                            <input type="text" id="checkin-placa" placeholder="Ex: ABC1D23" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white font-mono uppercase font-bold placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Marca & Modelo</label>
+                            <input type="text" id="checkin-modelo" placeholder="Ex: Honda Civic Touring" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Quilometragem Atual (KM)</label>
+                            <input type="number" id="checkin-km" placeholder="Ex: 50000" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Nome Completo do Cliente</label>
+                            <input type="text" id="checkin-cliente" placeholder="Ex: João da Silva" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <!-- 360 Camera Grid -->
+                    <div class="lg:col-span-2 glass-card p-5 rounded-2xl flex flex-col gap-4">
+                        <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2">Auditoria Fotográfica 360º (Entrada)</h3>
+                        <p class="text-xs text-slate-400 -mt-2">Selecione fotos reais do dispositivo ou clique em "MOCK FOTO" para preencher instantaneamente.</p>
+
+                        <div class="grid grid-cols-2 gap-4">
                             <!-- Frente -->
-                            <div class="photo-upload-zone" id="zone-frente">
-                                <span class="btn-simulate-photo" data-zone="frente" data-mock-img="car_front.jpg">MOCK</span>
-                                <input type="file" id="file-frente" accept="image/*" style="display:none;">
-                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                <span class="upload-label">1. Frente</span>
-                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            <div class="relative h-32 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-frente">
+                                <input type="file" accept="image/*" class="hidden" id="checkin-file-frente">
+                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-frente">
+                                    <svg class="w-8 h-8 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">1. Frente</span>
+                                </div>
+                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-frente">
+                                <button type="button" class="absolute bottom-2 right-2 bg-indigo-600/90 text-white text-[9px] font-extrabold uppercase px-2 py-1 rounded shadow-md z-20 hover:bg-indigo-500 tap-highlight-transparent" onclick="mockCheckinPhoto(event, 'frente')">MOCK FOTO</button>
                             </div>
 
                             <!-- Traseira -->
-                            <div class="photo-upload-zone" id="zone-traseira">
-                                <span class="btn-simulate-photo" data-zone="traseira" data-mock-img="car_back.jpg">MOCK</span>
-                                <input type="file" id="file-traseira" accept="image/*" style="display:none;">
-                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                <span class="upload-label">2. Traseira</span>
-                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            <div class="relative h-32 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-traseira">
+                                <input type="file" accept="image/*" class="hidden" id="checkin-file-traseira">
+                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-traseira">
+                                    <svg class="w-8 h-8 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">2. Traseira</span>
+                                </div>
+                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-traseira">
+                                <button type="button" class="absolute bottom-2 right-2 bg-indigo-600/90 text-white text-[9px] font-extrabold uppercase px-2 py-1 rounded shadow-md z-20 hover:bg-indigo-500 tap-highlight-transparent" onclick="mockCheckinPhoto(event, 'traseira')">MOCK FOTO</button>
                             </div>
 
-                            <!-- Lateral Esquerda -->
-                            <div class="photo-upload-zone" id="zone-esquerda">
-                                <span class="btn-simulate-photo" data-zone="esquerda" data-mock-img="car_left.jpg">MOCK</span>
-                                <input type="file" id="file-esquerda" accept="image/*" style="display:none;">
-                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                <span class="upload-label">3. Lat. Esquerda</span>
-                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            <!-- Lat. Esquerda -->
+                            <div class="relative h-32 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-esquerda">
+                                <input type="file" accept="image/*" class="hidden" id="checkin-file-esquerda">
+                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-esquerda">
+                                    <svg class="w-8 h-8 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">3. Lat. Esquerda</span>
+                                </div>
+                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-esquerda">
+                                <button type="button" class="absolute bottom-2 right-2 bg-indigo-600/90 text-white text-[9px] font-extrabold uppercase px-2 py-1 rounded shadow-md z-20 hover:bg-indigo-500 tap-highlight-transparent" onclick="mockCheckinPhoto(event, 'esquerda')">MOCK FOTO</button>
                             </div>
 
-                            <!-- Lateral Direita -->
-                            <div class="photo-upload-zone" id="zone-direita">
-                                <span class="btn-simulate-photo" data-zone="direita" data-mock-img="car_right.jpg">MOCK</span>
-                                <input type="file" id="file-direita" accept="image/*" style="display:none;">
-                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                <span class="upload-label">4. Lat. Direita</span>
-                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            <!-- Lat. Direita -->
+                            <div class="relative h-32 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-direita">
+                                <input type="file" accept="image/*" class="hidden" id="checkin-file-direita">
+                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-direita">
+                                    <svg class="w-8 h-8 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">4. Lat. Direita</span>
+                                </div>
+                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-direita">
+                                <button type="button" class="absolute bottom-2 right-2 bg-indigo-600/90 text-white text-[9px] font-extrabold uppercase px-2 py-1 rounded shadow-md z-20 hover:bg-indigo-500 tap-highlight-transparent" onclick="mockCheckinPhoto(event, 'direita')">MOCK FOTO</button>
                             </div>
                         </div>
-                    </div>
 
-                    <button type="button" id="btn-generate-checkin" class="btn btn-primary" style="margin-top: 10px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                        Gerar Termo de Entrada
-                    </button>
-                </form>
+                        <!-- Action buttons -->
+                        <div class="mt-4 flex flex-col gap-2">
+                            <button type="button" id="btn-trigger-signature" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-600/20 active:scale-[0.98]">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                Coletar Assinatura e Gerar Termo
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-
-            <!-- 3. FLEXIBLE BUDGET SCREEN -->
+            <!-- ------------------------------------------------------------- -->
+            <!-- 3. ORÇAMENTO FLEXÍVEL SCREEN (Cliente / Gerente)              -->
+            <!-- ------------------------------------------------------------- -->
             <section id="screen-budget" class="screen">
-                <h1 class="screen-title">Orçamento</h1>
-                <p class="screen-subtitle">Comparativo flexível de opções</p>
-
-                <!-- Vehicle Selector for Demo -->
-                <div class="vehicle-selector-wrapper card">
-                    <label class="form-label" for="budget-vehicle-select">Selecionar Carro para Orçamento:</label>
-                    <select id="budget-vehicle-select" class="form-control">
-                        <!-- Populated by JS -->
-                    </select>
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Orçamento Flexível</h1>
+                        <p class="text-slate-400 text-sm md:text-base">Escolha a melhor solução para o seu orçamento e veículo.</p>
+                    </div>
+                    
+                    <!-- Vehicle Selector inside screen for demo flexibility -->
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <select id="budget-vehicle-select" class="bg-transparent text-white text-xs font-semibold focus:outline-none w-full cursor-pointer">
+                            <!-- JS populated options -->
+                        </select>
+                    </div>
                 </div>
 
-                <div id="budget-empty-state" class="card" style="text-align: center; padding: 30px; display: none;">
-                    <p style="color: var(--text-muted);">Não há veículos aguardando aprovação de orçamento no momento.</p>
+                <div id="budget-empty-state" class="glass-card rounded-2xl p-10 text-center flex flex-col items-center justify-center hidden">
+                    <svg class="w-16 h-16 text-slate-700 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <h3 class="text-lg font-bold text-white mb-1">Nenhum veículo aguardando orçamento</h3>
+                    <p class="text-slate-400 text-sm max-w-sm">No momento todos os veículos da oficina estão em outras fases operacionais.</p>
                 </div>
 
-                <div id="budget-content-wrapper">
-                    <!-- Option A -->
-                    <div class="budget-options">
-                        <div class="budget-card recommended" id="option-a-card" data-option="A">
-                            <div class="budget-header">
-                                <div>
-                                    <span class="budget-label">Opção A</span>
-                                    <h4 class="budget-title">Peças Originais</h4>
-                                </div>
-                                <div class="budget-price">
-                                    <span style="font-size: 11px;">R$</span> 1.850<span style="font-size: 11px;">,00</span>
-                                </div>
-                            </div>
-                            <ul class="budget-features">
-                                <li>Pastilhas de Freio Originais de Fábrica</li>
-                                <li>Fluidos de Freio Homologados de Alta Performance</li>
-                                <li>Garantia Completa de 12 Meses</li>
-                                <li>Lavagem Ecológica Premium Cortesia</li>
-                            </ul>
-                            <button type="button" class="btn btn-cyan btn-sm btn-approve-budget" data-option="A">Aprovar Opção A</button>
-                        </div>
+                <div id="budget-cards-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Column/Option A: Premium (Brembo) -->
+                    <div class="glass-card rounded-2xl border-2 border-indigo-500/80 p-6 flex flex-col justify-between relative bg-gradient-to-b from-indigo-950/20 to-slate-900/80">
+                        <span class="absolute top-3 right-3 bg-indigo-500 text-black text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider">MAIS VENDIDO</span>
+                        <div>
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Opção A</span>
+                            <h2 class="text-xl font-bold text-white mt-1" id="budget-optA-title">Peças Premium (Brembo)</h2>
+                            <p class="text-slate-400 text-xs mt-1">Garantia total de 12 meses. Peças de alta performance.</p>
 
-                        <!-- Option B -->
-                        <div class="budget-card" id="option-b-card" data-option="B">
-                            <div class="budget-header">
-                                <div>
-                                    <span class="budget-label">Opção B</span>
-                                    <h4 class="budget-title">Peças Paralelas</h4>
-                                </div>
-                                <div class="budget-price">
-                                    <span style="font-size: 11px;">R$</span> 1.200<span style="font-size: 11px;">,00</span>
-                                </div>
+                            <!-- Price tag -->
+                            <div class="my-5 flex items-baseline">
+                                <span class="text-sm font-semibold text-slate-400 mr-1">R$</span>
+                                <span class="text-3xl font-extrabold text-white" id="budget-optA-price">2.450</span>
+                                <span class="text-sm font-medium text-slate-400 ml-1">,00</span>
                             </div>
-                            <ul class="budget-features">
-                                <li>Pastilhas Importadas de Primeira Linha (Cobreq)</li>
-                                <li>Fluido de Freio DOT4 Padrão</li>
-                                <li>Garantia de 6 Meses</li>
-                                <li>Inspeção de Segurança básica</li>
-                            </ul>
-                            <button type="button" class="btn btn-secondary btn-sm btn-approve-budget" data-option="B" style="border: 1px solid var(--accent-cyan); color: var(--accent-cyan);">Aprovar Opção B</button>
-                        </div>
 
-                        <!-- Option C -->
-                        <div class="budget-card" id="option-c-card" data-option="C">
-                            <div class="budget-header">
-                                <div>
-                                    <span class="budget-label">Opção C</span>
-                                    <h4 class="budget-title font-danger">Apenas o Essencial</h4>
-                                </div>
-                                <div class="budget-price">
-                                    <span style="font-size: 11px;">R$</span> 450<span style="font-size: 11px;">,00</span>
-                                </div>
-                            </div>
-                            <ul class="budget-features">
-                                <li>Pastilhas de Freio Standard (Sem ruído reduzido)</li>
-                                <li>Reaproveitamento de fluido existente (se seguro)</li>
-                                <li>Garantia Legal de 3 Meses</li>
+                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6">
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Discos e Pastilhas Brembo Premium</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Fluido de Freio DOT 5.1 Importado</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Higienização do Ar Condicionado Cortesia</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Teste em Dinamômetro</li>
                             </ul>
-                            <button type="button" class="btn btn-secondary btn-sm btn-approve-budget" data-option="C" style="border: 1px solid var(--accent-orange); color: var(--accent-orange);">Aprovar Opção C</button>
                         </div>
+                        <button type="button" onclick="approveBudget('A')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl text-sm transition shadow-lg shadow-indigo-600/10 active:scale-[0.98]">Aprovar Opção Premium</button>
+                    </div>
+
+                    <!-- Column/Option B: Intermediate (Cobreq) -->
+                    <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Opção B</span>
+                            <h2 class="text-xl font-bold text-white mt-1" id="budget-optB-title">Peças Intermediárias</h2>
+                            <p class="text-slate-400 text-xs mt-1">Garantia padrão de 6 meses. Ótimo custo-benefício.</p>
+
+                            <!-- Price tag -->
+                            <div class="my-5 flex items-baseline">
+                                <span class="text-sm font-semibold text-slate-400 mr-1">R$</span>
+                                <span class="text-3xl font-extrabold text-white" id="budget-optB-price">1.400</span>
+                                <span class="text-sm font-medium text-slate-400 ml-1">,00</span>
+                            </div>
+
+                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6">
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Pastilhas Cobreq de Cerâmica</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Fluido de Freio DOT 4 Padrão</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Regulagem Geral do Freio de Mão</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="approveBudget('B')" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold py-3 px-4 rounded-xl text-sm transition active:scale-[0.98]">Aprovar Opção Intermediária</button>
+                    </div>
+
+                    <!-- Column/Option C: Essential -->
+                    <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Opção C</span>
+                            <h2 class="text-xl font-bold text-white mt-1" id="budget-optC-title font-danger">Básico / Essencial</h2>
+                            <p class="text-slate-400 text-xs mt-1">Garantia legal de 3 meses. Foco estritamente na segurança.</p>
+
+                            <!-- Price tag -->
+                            <div class="my-5 flex items-baseline">
+                                <span class="text-sm font-semibold text-slate-400 mr-1">R$</span>
+                                <span class="text-3xl font-extrabold text-white" id="budget-optC-price">680</span>
+                                <span class="text-sm font-medium text-slate-400 ml-1">,00</span>
+                            </div>
+
+                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6">
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Pastilhas Standard de Alta Durabilidade</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Sangria Básica do Sistema de Freio</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="approveBudget('C')" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold py-3 px-4 rounded-xl text-sm transition active:scale-[0.98]">Aprovar Opção Básica</button>
                     </div>
                 </div>
             </section>
 
-
-            <!-- 4. BOX MECHANIC SCREEN -->
+            <!-- ------------------------------------------------------------- -->
+            <!-- 4. BOX DE SERVIÇO SCREEN (Mecânico)                            -->
+            <!-- ------------------------------------------------------------- -->
             <section id="screen-box" class="screen">
-                <h1 class="screen-title">Box de Serviço</h1>
-                <p class="screen-subtitle">Painel de execução & auditoria do mecânico</p>
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Box de Execução</h1>
+                        <p class="text-slate-400 text-sm md:text-base">Mecânico: Preencha a auditoria fotográfica da ordem de serviço.</p>
+                    </div>
 
-                <!-- Vehicle Selector for Mechanic -->
-                <div class="vehicle-selector-wrapper card">
-                    <label class="form-label" for="box-vehicle-select">Selecionar Carro em Manutenção:</label>
-                    <select id="box-vehicle-select" class="form-control">
-                        <!-- Populated by JS -->
-                    </select>
+                    <!-- Vehicle Selector inside screen for demo flexibility -->
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 0 1-2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 12-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 12-2m0 0V5a2 2 0 0 12-2h6a2 2 0 0 12 2v2M7 7h10"></path></svg>
+                        <select id="box-vehicle-select" class="bg-transparent text-white text-xs font-semibold focus:outline-none w-full cursor-pointer">
+                            <!-- JS populated options -->
+                        </select>
+                    </div>
                 </div>
 
-                <div id="box-empty-state" class="card" style="text-align: center; padding: 30px; display: none;">
-                    <p style="color: var(--text-muted);">Não há veículos em execução no box atualmente.</p>
+                <div id="box-empty-state" class="glass-card rounded-2xl p-10 text-center flex flex-col items-center justify-center hidden">
+                    <svg class="w-16 h-16 text-slate-700 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <h3 class="text-lg font-bold text-white mb-1">Nenhum veículo em andamento</h3>
+                    <p class="text-slate-400 text-sm max-w-sm">Use a tela de Orçamento ou Dashboard para encaminhar um veículo à execução.</p>
                 </div>
 
-                <div id="box-content-wrapper">
-                    <!-- Global OS Progress -->
-                    <div class="card" style="padding: 12px; margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
-                            <span style="color: var(--text-muted);">Progresso Geral da O.S.</span>
-                            <span id="os-progress-percentage" style="color: var(--accent-cyan); font-weight: bold;">0%</span>
-                        </div>
-                        <div class="task-progress-bar">
-                            <div class="task-progress-fill" id="os-progress-bar-fill"></div>
+                <!-- Box Content -->
+                <div id="box-content-wrapper" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Progress Sidebar -->
+                    <div class="lg:col-span-1 flex flex-col gap-6">
+                        <div class="glass-card p-5 rounded-2xl">
+                            <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2 mb-4">Progresso Geral</h3>
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
+                                <span>Fotos da O.S. Enviadas</span>
+                                <span id="box-progress-percentage" class="text-emerald-400">0%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="box-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-300 w-0"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-2">A auditoria exige obrigatoriamente todas as fotos do processo antes de liberar o checkout do carro.</p>
                         </div>
                     </div>
 
-                    <!-- Checklist Container -->
-                    <div id="mechanic-tasks-container">
-                        <!-- Task cards will be generated by JS -->
+                    <!-- OS Checklist -->
+                    <div class="lg:col-span-2 flex flex-col gap-4" id="box-tasks-list">
+                        <!-- Dynamic OS tasks and photo drop zones will load here -->
                     </div>
-
-                    <!-- Finish O.S. Button -->
-                    <button type="button" id="btn-finish-os" class="btn btn-primary" style="margin-top: 10px;" disabled>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                        Concluir Serviço e Liberar Veículo
-                    </button>
                 </div>
             </section>
 
-
-            <!-- 5. CLIENT DOSSIER SCREEN -->
+            <!-- ------------------------------------------------------------- -->
+            <!-- 5. CLIENT DOSSIER SCREEN (Dossiê Cliente)                     -->
+            <!-- ------------------------------------------------------------- -->
             <section id="screen-dossier" class="screen">
-                <h1 class="screen-title">Dossiê de Serviço</h1>
-                <p class="screen-subtitle">Relatório inquestionável de auditabilidade</p>
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Dossiê de Auditoria</h1>
+                        <p class="text-slate-400 text-sm md:text-base">A linha do tempo fotográfica e termos assinados do serviço.</p>
+                    </div>
 
-                <!-- Vehicle Selector for Dossier -->
-                <div class="vehicle-selector-wrapper card">
-                    <label class="form-label" for="dossier-vehicle-select">Selecionar Histórico do Carro:</label>
-                    <select id="dossier-vehicle-select" class="form-control">
-                        <!-- Populated by JS -->
-                    </select>
+                    <!-- Vehicle Selector inside screen for demo flexibility -->
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 0 1-2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 12-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 12-2m0 0V5a2 2 0 0 12-2h6a2 2 0 0 12 2v2M7 7h10"></path></svg>
+                        <select id="dossier-vehicle-select" class="bg-transparent text-white text-xs font-semibold focus:outline-none w-full cursor-pointer">
+                            <!-- JS populated options -->
+                        </select>
+                    </div>
                 </div>
 
-                <div id="dossier-content-wrapper">
-                    <!-- Vehicle Info Header -->
-                    <div class="card" style="background: linear-gradient(135deg, var(--bg-secondary), rgba(0,240,255,0.05)); border-color: var(--border-color-glow); padding: 18px; margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div>
-                                <h3 id="dossier-modelo" style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Honda Civic Touring</h3>
-                                <p id="dossier-cliente-km" style="font-size: 12px; color: var(--text-muted);">Cliente: João Silva • Quilometragem: 50.000 KM</p>
-                            </div>
-                            <span id="dossier-placa" class="vehicle-plate" style="font-size: 13px; padding: 4px 8px;">ABC-1234</span>
+                <!-- Dossier Content Wrapper -->
+                <div class="max-w-3xl mx-auto flex flex-col gap-6">
+                    <!-- Target Car Details Card -->
+                    <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center border-l-4 border-l-emerald-500 bg-gradient-to-r from-emerald-950/10 to-slate-900/60">
+                        <div>
+                            <h2 id="dossier-car-name" class="text-xl font-bold text-white mb-0.5">Toyota Corolla Altis</h2>
+                            <p id="dossier-car-meta" class="text-xs text-slate-400">Proprietário: José da Silva • Entrada: 02/06/2026</p>
+                        </div>
+                        <div class="mt-3 sm:mt-0 flex items-center gap-2">
+                            <span id="dossier-car-plate" class="font-mono bg-slate-950 border border-slate-800 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm">NXP-9852</span>
+                            <span id="dossier-car-status" class="text-[9px] font-extrabold uppercase px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Pronto</span>
                         </div>
                     </div>
 
-                    <!-- Beautiful Timeline -->
-                    <div class="dossier-timeline" id="dossier-timeline-container">
-                        <!-- Dynamic timeline items loaded by JS -->
+                    <!-- Vertical Timeline -->
+                    <div class="relative border-l border-slate-800/80 ml-3 md:ml-4 pl-6 md:pl-8 space-y-8" id="dossier-timeline">
+                        <!-- Rendered by JS -->
                     </div>
 
-                    <button type="button" id="btn-share-dossier" class="btn btn-cyan">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-                        Compartilhar via WhatsApp
-                    </button>
+                    <!-- Print/Share Actions -->
+                    <div class="flex gap-4">
+                        <button type="button" id="btn-share-dossier" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/15 active:scale-[0.98]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.684 10.742l5.132-2.566m0 7.648l-5.132-2.566M19 4a3 3 0 11-6 0 3 3 0 016 0zm-6 8a3 3 0 11-6 0 3 3 0 016 0zm6 8a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            Compartilhar via WhatsApp
+                        </button>
+                    </div>
                 </div>
             </section>
 
         </main>
 
-        <!-- Digital Signature Modal Overlay -->
-        <div class="modal-overlay" id="signature-modal">
-            <div class="modal-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 16px; font-weight: 600;">Assinatura do Cliente</h3>
-                    <button type="button" id="btn-close-signature" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 16px;">✕</button>
-                </div>
-                <p style="font-size: 12px; color: var(--text-muted);">O cliente concorda com os termos de vistoria de entrada e autoriza a análise técnica.</p>
-                
-                <div class="canvas-container">
-                    <canvas id="signature-canvas"></canvas>
-                </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 8px;">
-                    <button type="button" id="btn-clear-signature" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 13px;">Limpar</button>
-                    <button type="button" id="btn-save-signature" class="btn btn-primary" style="flex: 2; padding: 10px; font-size: 13px;">Confirmar Entrada</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Success Checkmark Animation Overlay -->
-        <div class="success-checkmark-overlay" id="success-overlay">
-            <div class="checkmark-circle">✓</div>
-            <div class="success-text" id="success-message-title">Operação Concluída</div>
-            <div class="success-subtext" id="success-message-subtitle">O status do veículo foi atualizado com sucesso.</div>
-        </div>
-
-        <!-- Floating Toast Alert -->
-        <div id="toast">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <span id="toast-message">Notificação de Sistema</span>
-        </div>
-
-        <!-- Persistent Navigation Bottom Bar -->
-        <nav class="app-nav">
-            <button class="nav-item active" data-screen="screen-dashboard">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span>Dashboard</span>
-            </button>
-            <button class="nav-item" data-screen="screen-checkin">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span>Check-in</span>
-            </button>
-            <button class="nav-item" data-screen="screen-budget">
-                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                <span>Orçamento</span>
-            </button>
-            <button class="nav-item" data-screen="screen-box">
-                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                <span>Mecânico</span>
-            </button>
-            <button class="nav-item" data-screen="screen-dossier">
-                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                <span>Dossiê</span>
-            </button>
+        <!-- ========================================== -->
+        <!-- MOBILE BOTTOM NAV TAB BAR (md:hidden)      -->
+        <!-- ========================================== -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-900 border-t border-slate-800/80 flex items-center justify-around z-40 px-2 pb-1" id="mobile-bottom-nav">
+            <!-- Rendered dynamically by JS depending on role permissions -->
         </nav>
 
     </div>
 
-    <script src="app.js"></script>
+    <!-- ========================================== -->
+    <!-- DIGITAL SIGNATURE MODAL                    -->
+    <!-- ========================================== -->
+    <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="signature-modal">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-white">Assinatura de Entrada</h3>
+                <button type="button" onclick="closeSignatureModal()" class="text-slate-400 hover:text-white font-bold text-lg p-1">✕</button>
+            </div>
+            <p class="text-xs text-slate-400">O cliente declara estar ciente do estado de entrada do carro e concorda com a vistoria e com a realização do diagnóstico técnico.</p>
+            
+            <!-- Canvas container -->
+            <div class="h-44 bg-white border border-slate-300 rounded-xl overflow-hidden touch-none relative">
+                <canvas id="signature-canvas" class="w-full h-full cursor-crosshair"></canvas>
+            </div>
+
+            <!-- Modal control buttons -->
+            <div class="flex gap-2">
+                <button type="button" onclick="clearSignatureCanvas()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-xl text-xs transition border border-slate-700">Limpar</button>
+                <button type="button" onclick="saveSignatureAndCompleteCheckin()" class="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl text-xs transition shadow-md shadow-indigo-600/10">Confirmar Check-in</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SUCCESS ANIMATION OVERLAY                  -->
+    <!-- ========================================== -->
+    <div class="fixed inset-0 z-50 bg-slate-950/95 flex flex-col items-center justify-center p-6 hidden transition-all duration-300" id="success-overlay">
+        <div class="w-20 h-20 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 text-4xl shadow-xl shadow-emerald-500/20 mb-4 animate-bounce">
+            ✓
+        </div>
+        <h2 class="text-xl font-bold text-white text-center mb-1" id="success-title">Operação Concluída!</h2>
+        <p class="text-xs text-slate-400 text-center max-w-xs" id="success-subtitle">O status do veículo foi atualizado no banco de dados.</p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- FLOATING TOAST NOTIFICATION                -->
+    <!-- ========================================== -->
+    <div class="fixed bottom-20 md:bottom-6 right-6 z-50 bg-slate-900 border border-indigo-500 rounded-xl p-3.5 shadow-xl flex items-center gap-2.5 max-w-sm hidden" id="toast">
+        <div class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></div>
+        <p class="text-xs font-semibold text-white" id="toast-message">Notificação de sistema</p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MAIN APPLICATION LOGIC                     -->
+    <!-- ========================================== -->
+    <script>
+        // Set of mock high quality URLs representing automotive components
+        const PHOTOS_MOCK_DATABASE = {
+            frente: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=400",
+            traseira: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=400",
+            esquerda: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=400",
+            direita: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=400",
+            
+            task_old: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=400", // Worn part
+            task_new: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=400", // Shiny box
+            task_done: "https://images.unsplash.com/photo-1617469767053-d3b508a04242?auto=format&fit=crop&q=80&w=400", // Reassembled parts
+            
+            final_delivery: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=500" // Detail clean car
+        };
+
+        // Static layout details based on requirements
+        const SCREENS_CONFIG = {
+            "screen-dashboard": { name: "Dashboard", icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>` },
+            "screen-checkin": { name: "Check-in", icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>` },
+            "screen-budget": { name: "Orçamento", icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>` },
+            "screen-box": { name: "Box de Serviço", icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>` },
+            "screen-dossier": { name: "Dossiê Cliente", icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>` }
+        };
+
+        // Screen availability matrix based on Roles
+        const ROLE_PERMISSIONS = {
+            gerente: ["screen-dashboard", "screen-checkin", "screen-budget", "screen-box", "screen-dossier"],
+            mecanico: ["screen-box", "screen-dossier"], // labeled dynamically
+            cliente: ["screen-budget", "screen-dossier"]
+        };
+
+        // Static profiles details for sidebar styling
+        const ROLE_PROFILES = {
+            gerente: { name: "Rodrigo Alencar", title: "Gerente Geral", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100", border: "border-indigo-500" },
+            mecanico: { name: "Marcão Souza", title: "Mecânico Líder", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100", border: "border-emerald-500" },
+            cliente: { name: "Clara G. Silva", title: "Proprietário", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100", border: "border-indigo-400" }
+        };
+
+        // Required Seed Vehicles
+        const SEED_VEHICLES = [
+            {
+                id: "v-civic",
+                placa: "ABC-1234",
+                modelo: "Honda Civic Touring 2021",
+                km: "50000",
+                cliente: "Rodrigo Alencar",
+                status: "recepcao", // 'recepcao', 'orcamento', 'execucao', 'pronto'
+                checkin: {
+                    data: "02/06/2026",
+                    fotos: { frente: null, traseira: null, esquerda: null, direita: null },
+                    termoGerado: false,
+                    assinatura: null
+                },
+                orcamento: {
+                    opcaoSelecionada: null,
+                    valores: {
+                        A: { descricao: "Pastilhas Brembo + Fluidos Premium + Calibração", total: 2450.00 },
+                        B: { descricao: "Pastilhas Cobreq + Fluido de Freio DOT 4", total: 1400.00 },
+                        C: { descricao: "Reparo Básico (Pastilhas Fras-Le)", total: 680.00 }
+                    }
+                },
+                servico: {
+                    tarefas: [
+                        { id: "t1", descricao: "Substituição das Pastilhas de Freio Dianteiras", fotos: { velha: null, nova: null, concluido: null }, concluida: false },
+                        { id: "t2", descricao: "Limpeza técnica de cubos e cálices", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
+                    ]
+                }
+            },
+            {
+                id: "v-compass",
+                placa: "KGA-7422",
+                modelo: "Jeep Compass Longitude 2020",
+                km: "78000",
+                cliente: "Mariana Souza",
+                status: "orcamento",
+                checkin: {
+                    data: "01/06/2026",
+                    fotos: {
+                        frente: PHOTOS_MOCK_DATABASE.frente,
+                        traseira: PHOTOS_MOCK_DATABASE.traseira,
+                        esquerda: PHOTOS_MOCK_DATABASE.esquerda,
+                        direita: PHOTOS_MOCK_DATABASE.direita
+                    },
+                    termoGerado: true,
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 25 Q 30 10, 50 25 T 90 25' stroke='black' stroke-width='2' fill='none'/></svg>"
+                },
+                orcamento: {
+                    opcaoSelecionada: null,
+                    valores: {
+                        A: { descricao: "Pastilhas Brembo + Discos Importados (Jeep)", total: 2450.00 },
+                        B: { descricao: "Pastilhas Cobreq de Cerâmica", total: 1400.00 },
+                        C: { descricao: "Manutenção Básica de Segurança", total: 680.00 }
+                    }
+                },
+                servico: {
+                    tarefas: [
+                        { id: "t1", descricao: "Troca do Disco & Pastilhas Dianteiras", fotos: { velha: null, nova: null, concluido: null }, concluida: false },
+                        { id: "t2", descricao: "Alinhamento Direcional 3D", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
+                    ]
+                }
+            },
+            {
+                id: "v-corolla",
+                placa: "NXP-9852",
+                modelo: "Toyota Corolla Altis 2022",
+                km: "35200",
+                cliente: "José da Silva",
+                status: "execucao",
+                checkin: {
+                    data: "02/06/2026",
+                    fotos: {
+                        frente: PHOTOS_MOCK_DATABASE.frente,
+                        traseira: PHOTOS_MOCK_DATABASE.traseira,
+                        esquerda: PHOTOS_MOCK_DATABASE.esquerda,
+                        direita: PHOTOS_MOCK_DATABASE.direita
+                    },
+                    termoGerado: true,
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 30 C 40 10, 60 50, 90 20' stroke='black' stroke-width='2' fill='none'/></svg>"
+                },
+                orcamento: {
+                    opcaoSelecionada: "A",
+                    valores: {
+                        A: { descricao: "Pastilhas de Alta Performance Brembo", total: 2450.00 },
+                        B: { descricao: "Pastilhas Intermediárias Cobreq", total: 1400.00 },
+                        C: { descricao: "Troca Básico de Segurança", total: 680.00 }
+                    }
+                },
+                servico: {
+                    tarefas: [
+                        { id: "t1", descricao: "Troca de Pastilhas Traseiras", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: null }, concluida: false },
+                        { id: "t2", descricao: "Substituição do Fluido de Freio DOT 5", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
+                    ]
+                }
+            },
+            {
+                id: "v-onix",
+                placa: "QUR-4921",
+                modelo: "Chevrolet Onix Turbo 2022",
+                km: "42000",
+                cliente: "Viviane Ramos",
+                status: "pronto",
+                checkin: {
+                    data: "31/05/2026",
+                    fotos: {
+                        frente: PHOTOS_MOCK_DATABASE.frente,
+                        traseira: PHOTOS_MOCK_DATABASE.traseira,
+                        esquerda: PHOTOS_MOCK_DATABASE.esquerda,
+                        direita: PHOTOS_MOCK_DATABASE.direita
+                    },
+                    termoGerado: true,
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 20 L 40 40 L 90 10' stroke='black' stroke-width='2' fill='none'/></svg>"
+                },
+                orcamento: {
+                    opcaoSelecionada: "B",
+                    valores: {
+                        A: { descricao: "Pastilhas Premium + Filtros Combustível", total: 2450.00 },
+                        B: { descricao: "Revisão Preventiva (Pastilhas Cobreq)", total: 1400.00 },
+                        C: { descricao: "Básico Manutenção Emergencial", total: 680.00 }
+                    }
+                },
+                servico: {
+                    tarefas: [
+                        { id: "t1", descricao: "Troca de Pastilhas de Freio Dianteiras", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true },
+                        { id: "t2", descricao: "Substituição do Filtro de Cabine (Ar Cond.)", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true }
+                    ]
+                }
+            }
+        ];
+
+        // Commercial Alerts
+        const MOCK_COMMERCIAL_ALERTS = [
+            { id: "a1", text: "O veículo <strong>Honda Civic (ABC-1234)</strong> atingiu <strong>50.000km</strong>. Hora de realizar a auditoria completa de entrada.", actionScreen: "screen-checkin" },
+            { id: "a2", text: "O veículo <strong>Jeep Compass (KGA-7422)</strong> possui orçamento pronto de R$ 2.450 pendente de aprovação.", actionScreen: "screen-budget" }
+        ];
+
+        // State Store Cache
+        let appState = {
+            role: "gerente",
+            activeScreen: "screen-dashboard",
+            vehicles: [],
+            alerts: []
+        };
+
+        // Initial launch hook
+        window.addEventListener("DOMContentLoaded", () => {
+            initDatabase();
+            setupRoleSelectors();
+            setupCheckinPhotoZones();
+            setupSignatureCanvas();
+            setupBudgetSelect();
+            setupBoxSelect();
+            setupDossierSelect();
+            
+            // Initial routing rendering
+            syncUINavigation();
+            navigateTo(appState.activeScreen);
+        });
+
+        // -------------------------------------------------------------
+        // DATABASE STATE ENGINE
+        // -------------------------------------------------------------
+        function initDatabase() {
+            const cached = localStorage.getItem("cerracar_state");
+            if (cached) {
+                appState = JSON.parse(cached);
+                // Ensure default values just in case
+                if (!appState.vehicles || appState.vehicles.length === 0) {
+                    appState.vehicles = [...SEED_VEHICLES];
+                }
+                if (!appState.alerts || appState.alerts.length === 0) {
+                    appState.alerts = [...MOCK_COMMERCIAL_ALERTS];
+                }
+            } else {
+                appState.vehicles = [...SEED_VEHICLES];
+                appState.alerts = [...MOCK_COMMERCIAL_ALERTS];
+                saveDatabase();
+            }
+        }
+
+        function saveDatabase() {
+            localStorage.setItem("cerracar_state", JSON.stringify(appState));
+        }
+
+        // -------------------------------------------------------------
+        // ACCESS CONTROL & NAVIGATION LOGIC
+        // -------------------------------------------------------------
+        function setupRoleSelectors() {
+            const desktopSel = document.getElementById("desktop-role-select");
+            const mobileSel = document.getElementById("mobile-role-select");
+
+            desktopSel.value = appState.role;
+            mobileSel.value = appState.role;
+
+            const handleRoleChange = (e) => {
+                const newRole = e.target.value;
+                appState.role = newRole;
+                desktopSel.value = newRole;
+                mobileSel.value = newRole;
+                
+                saveDatabase();
+                syncUINavigation();
+                
+                // Update profile display block
+                const p = ROLE_PROFILES[newRole];
+                document.getElementById("desktop-profile-name").textContent = p.name;
+                document.getElementById("desktop-profile-title").textContent = p.title;
+                
+                const profileImg = document.getElementById("desktop-profile-img");
+                profileImg.src = p.img;
+                profileImg.className = `w-10 h-10 rounded-full border-2 object-cover ${p.border}`;
+
+                // Validate if current screen is forbidden
+                const allowed = ROLE_PERMISSIONS[newRole];
+                if (!allowed.includes(appState.activeScreen)) {
+                    // Navigate to the first allowed screen
+                    navigateTo(allowed[0]);
+                } else {
+                    // Refresh screen
+                    navigateTo(appState.activeScreen);
+                }
+                
+                showToast(`Perfil alterado para: ${newRole.toUpperCase()}`);
+            };
+
+            desktopSel.addEventListener("change", handleRoleChange);
+            mobileSel.addEventListener("change", handleRoleChange);
+        }
+
+        function syncUINavigation() {
+            const allowedScreens = ROLE_PERMISSIONS[appState.role];
+
+            // Render Desktop Nav Links
+            const desktopNav = document.getElementById("desktop-nav-menu");
+            desktopNav.innerHTML = "";
+            
+            // Render Mobile Nav Links
+            const mobileNav = document.getElementById("mobile-bottom-nav");
+            mobileNav.innerHTML = "";
+
+            allowedScreens.forEach(screenId => {
+                const config = SCREENS_CONFIG[screenId];
+                let label = config.name;
+                
+                // Mechanic OS Dossier re-labeling
+                if (appState.role === "mecanico" && screenId === "screen-dossier") {
+                    label = "Histórico";
+                }
+
+                // Desktop Button
+                const dBtn = document.createElement("button");
+                dBtn.type = "button";
+                dBtn.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition tap-highlight-transparent ${appState.activeScreen === screenId ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'}`;
+                dBtn.innerHTML = `${config.icon} <span>${label}</span>`;
+                dBtn.addEventListener("click", () => navigateTo(screenId));
+                desktopNav.appendChild(dBtn);
+
+                // Mobile Button
+                const mBtn = document.createElement("button");
+                mBtn.type = "button";
+                mBtn.className = `flex flex-col items-center justify-center flex-1 h-full gap-1 tap-highlight-transparent ${appState.activeScreen === screenId ? 'text-indigo-400' : 'text-slate-400'}`;
+                mBtn.innerHTML = `
+                    <div class="${appState.activeScreen === screenId ? 'scale-110' : ''} transition-transform duration-200">
+                        ${config.icon}
+                    </div>
+                    <span class="text-[9px] font-semibold">${label}</span>
+                `;
+                mBtn.addEventListener("click", () => navigateTo(screenId));
+                mobileNav.appendChild(mBtn);
+            });
+        }
+
+        function navigateTo(screenId) {
+            appState.activeScreen = screenId;
+            saveDatabase();
+            
+            // Re-sync highlighting in nav menus
+            syncUINavigation();
+
+            // Toggle DOM visibility
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) targetScreen.classList.add("active");
+
+            // Dispatch screens refresh
+            if (screenId === "screen-dashboard") renderDashboard();
+            if (screenId === "screen-budget") renderBudget();
+            if (screenId === "screen-box") renderBox();
+            if (screenId === "screen-dossier") renderDossier();
+        }
+
+        // -------------------------------------------------------------
+        // SCREEN 1: DASHBOARD VISUALS
+        // -------------------------------------------------------------
+        function renderDashboard() {
+            // Count calculations
+            const rec = appState.vehicles.filter(v => v.status === "recepcao").length;
+            const orc = appState.vehicles.filter(v => v.status === "orcamento").length;
+            const exe = appState.vehicles.filter(v => v.status === "execucao").length;
+            const prt = appState.vehicles.filter(v => v.status === "pronto").length;
+
+            document.getElementById("count-recepcao").textContent = rec;
+            document.getElementById("count-orcamento").textContent = orc;
+            document.getElementById("count-execucao").textContent = exe;
+            document.getElementById("count-pronto").textContent = prt;
+
+            // Render Commercial alerts
+            const alertsContainer = document.getElementById("dashboard-alerts-container");
+            alertsContainer.innerHTML = "";
+            
+            appState.alerts.forEach(alert => {
+                const card = document.createElement("div");
+                card.className = "glass-card p-4 rounded-xl flex justify-between items-center bg-gradient-to-r from-slate-900/60 to-indigo-950/10 border-l-2 border-l-indigo-500/80";
+                card.innerHTML = `
+                    <div class="flex-1 pr-3">
+                        <p class="text-xs text-slate-300 leading-relaxed">${alert.text}</p>
+                    </div>
+                    <button type="button" class="bg-indigo-600/90 hover:bg-indigo-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shrink-0 transition" onclick="navigateTo('${alert.actionScreen}')">Ir para Tela</button>
+                `;
+                alertsContainer.appendChild(card);
+            });
+
+            // Active Funnel selection filter rendering
+            const funnelCards = document.querySelectorAll(".funnel-card");
+            let activeFilter = "recepcao"; // default highlights
+
+            // Find current active card
+            const activeCard = document.querySelector(".funnel-card.active");
+            if (activeCard) {
+                activeFilter = activeCard.getAttribute("data-status");
+            }
+
+            document.getElementById("filter-indicator").textContent = activeFilter.toUpperCase();
+
+            // Render operacionais vehicles list filtered
+            const listContainer = document.getElementById("dashboard-vehicles-container");
+            listContainer.innerHTML = "";
+
+            const filtered = appState.vehicles.filter(v => v.status === activeFilter);
+            
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="glass-card p-6 text-center text-slate-500 text-xs rounded-xl">
+                        Nenhum veículo nesta etapa operacional.
+                    </div>
+                `;
+            } else {
+                filtered.forEach(v => {
+                    const row = document.createElement("div");
+                    row.className = "glass-card p-4 rounded-xl flex justify-between items-center cursor-pointer transition active:scale-[0.99]";
+                    
+                    let badgeClass = "bg-orange-500/10 text-orange-400 border border-orange-500/20";
+                    let badgeText = "Check-in";
+                    if (v.status === "orcamento") {
+                        badgeClass = "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20";
+                        badgeText = "Aprovação";
+                    } else if (v.status === "execucao") {
+                        badgeClass = "bg-indigo-400/10 text-indigo-300 border border-indigo-400/20";
+                        badgeText = "No Box";
+                    } else if (v.status === "pronto") {
+                        badgeClass = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                        badgeText = "Pronto";
+                    }
+
+                    row.innerHTML = `
+                        <div class="flex flex-col gap-1">
+                            <span class="font-mono text-xs font-bold text-white bg-slate-950 px-2 py-0.5 rounded border border-slate-800 self-start">${v.placa}</span>
+                            <span class="text-sm font-bold text-white mt-1">${v.modelo}</span>
+                            <span class="text-[11px] text-slate-400">Cliente: ${v.cliente} • KM: ${parseInt(v.km).toLocaleString('pt-BR')}</span>
+                        </div>
+                        <span class="text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-lg ${badgeClass}">${badgeText}</span>
+                    `;
+
+                    row.addEventListener("click", () => {
+                        // Smart redirection: click goes directly to the screen managing that car
+                        if (v.status === "recepcao") {
+                            // pre-fill checkin
+                            document.getElementById("checkin-placa").value = v.placa;
+                            document.getElementById("checkin-modelo").value = v.modelo;
+                            document.getElementById("checkin-km").value = v.km;
+                            document.getElementById("checkin-cliente").value = v.cliente;
+                            navigateTo("screen-checkin");
+                        } else if (v.status === "orcamento") {
+                            const select = document.getElementById("budget-vehicle-select");
+                            select.value = v.id;
+                            navigateTo("screen-budget");
+                        } else if (v.status === "execucao") {
+                            const select = document.getElementById("box-vehicle-select");
+                            select.value = v.id;
+                            navigateTo("screen-box");
+                        } else if (v.status === "pronto") {
+                            const select = document.getElementById("dossier-vehicle-select");
+                            select.value = v.id;
+                            navigateTo("screen-dossier");
+                        }
+                    });
+
+                    listContainer.appendChild(row);
+                });
+            }
+
+            // Wire funnel card filter switches
+            funnelCards.forEach(card => {
+                card.replaceWith(card.cloneNode(true)); // Clear listeners
+            });
+
+            document.querySelectorAll(".funnel-card").forEach(card => {
+                const status = card.getAttribute("data-status");
+                if (status === activeFilter) {
+                    card.classList.add("active", "border-indigo-500");
+                } else {
+                    card.classList.remove("active", "border-indigo-500");
+                }
+
+                card.addEventListener("click", () => {
+                    document.querySelectorAll(".funnel-card").forEach(c => {
+                        c.classList.remove("active", "border-indigo-500");
+                    });
+                    card.classList.add("active", "border-indigo-500");
+                    renderDashboard();
+                });
+            });
+        }
+
+        // -------------------------------------------------------------
+        // SCREEN 2: CHECK-IN PHOTOS & FORMS
+        // -------------------------------------------------------------
+        let checkinPhotos = { frente: null, traseira: null, esquerda: null, direita: null };
+
+        function setupCheckinPhotoZones() {
+            const zones = ["frente", "traseira", "esquerda", "direita"];
+            zones.forEach(z => {
+                const zoneDiv = document.getElementById(`checkin-zone-${z}`);
+                const fileInput = document.getElementById(`checkin-file-${z}`);
+                
+                // Clicking trigger file prompt
+                zoneDiv.addEventListener("click", (e) => {
+                    if (e.target.tagName === "BUTTON") return;
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            setCheckinPhoto(z, event.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+
+            // Bind sign submit
+            document.getElementById("btn-trigger-signature").addEventListener("click", () => {
+                const placa = document.getElementById("checkin-placa").value.trim().toUpperCase();
+                const modelo = document.getElementById("checkin-modelo").value.trim();
+                const km = document.getElementById("checkin-km").value.trim();
+                const cliente = document.getElementById("checkin-cliente").value.trim();
+
+                if (!placa || !modelo || !km || !cliente) {
+                    showToast("Por favor, preencha todos os dados cadastrais.");
+                    return;
+                }
+
+                openSignatureModal();
+            });
+        }
+
+        function mockCheckinPhoto(event, zoneName) {
+            event.stopPropagation();
+            const url = PHOTOS_MOCK_DATABASE[zoneName];
+            setCheckinPhoto(zoneName, url);
+            showToast(`Foto ${zoneName.toUpperCase()} simulada!`);
+        }
+
+        function setCheckinPhoto(zoneName, dataUrl) {
+            checkinPhotos[zoneName] = dataUrl;
+            
+            const preview = document.getElementById(`checkin-preview-${zoneName}`);
+            const prompt = document.getElementById(`checkin-prompt-${zoneName}`);
+            
+            preview.src = dataUrl;
+            preview.classList.remove("hidden");
+            prompt.classList.add("hidden");
+        }
+
+        // -------------------------------------------------------------
+        // CANVAS SIGNATURE MODAL
+        // -------------------------------------------------------------
+        let signatureCanvas, signatureCtx, isDrawing = false;
+        let lastSigX = 0, lastSigY = 0;
+
+        function setupSignatureCanvas() {
+            signatureCanvas = document.getElementById("signature-canvas");
+            signatureCtx = signatureCanvas.getContext("2d");
+
+            function getTouchPos(e) {
+                const rect = signatureCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function startDraw(e) {
+                isDrawing = true;
+                const pos = getTouchPos(e);
+                lastSigX = pos.x;
+                lastSigY = pos.y;
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const pos = getTouchPos(e);
+                signatureCtx.beginPath();
+                signatureCtx.moveTo(lastSigX, lastSigY);
+                signatureCtx.lineTo(pos.x, pos.y);
+                signatureCtx.strokeStyle = "#0b0f19";
+                signatureCtx.lineWidth = 3;
+                signatureCtx.lineCap = "round";
+                signatureCtx.stroke();
+                lastSigX = pos.x;
+                lastSigY = pos.y;
+            }
+
+            function stopDraw() {
+                isDrawing = false;
+            }
+
+            // Mouse handlers
+            signatureCanvas.onmousedown = startDraw;
+            signatureCanvas.onmousemove = draw;
+            window.addEventListener("mouseup", stopDraw);
+
+            // Touch handlers for responsive screens
+            signatureCanvas.ontouchstart = startDraw;
+            signatureCanvas.ontouchmove = draw;
+            signatureCanvas.ontouchend = stopDraw;
+        }
+
+        function openSignatureModal() {
+            const modal = document.getElementById("signature-modal");
+            modal.classList.remove("hidden");
+
+            // Correct coordinate sizing based on offset box size
+            signatureCanvas.width = signatureCanvas.parentElement.clientWidth;
+            signatureCanvas.height = signatureCanvas.parentElement.clientHeight;
+            
+            clearSignatureCanvas();
+        }
+
+        function closeSignatureModal() {
+            document.getElementById("signature-modal").classList.add("hidden");
+        }
+
+        function clearSignatureCanvas() {
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        }
+
+        function saveSignatureAndCompleteCheckin() {
+            // Check blank state
+            const blank = document.createElement("canvas");
+            blank.width = signatureCanvas.width;
+            blank.height = signatureCanvas.height;
+            if (signatureCanvas.toDataURL() === blank.toDataURL()) {
+                showToast("A assinatura é obrigatória para finalizar.");
+                return;
+            }
+
+            const signatureData = signatureCanvas.toDataURL();
+            closeSignatureModal();
+
+            // Extract values
+            const placa = document.getElementById("checkin-placa").value.trim().toUpperCase();
+            const modelo = document.getElementById("checkin-modelo").value.trim();
+            const km = document.getElementById("checkin-km").value.trim();
+            const cliente = document.getElementById("checkin-cliente").value.trim();
+
+            // Check if user has uploaded actual check-in photos, if not fall back to mock
+            const finalPhotos = {};
+            const zones = ["frente", "traseira", "esquerda", "direita"];
+            zones.forEach(z => {
+                finalPhotos[z] = checkinPhotos[z] || PHOTOS_MOCK_DATABASE[z];
+            });
+
+            // Find if existing in database
+            let car = appState.vehicles.find(v => v.placa === placa);
+            if (car) {
+                car.status = "orcamento";
+                car.km = km;
+                car.cliente = cliente;
+                car.checkin = {
+                    data: new Date().toLocaleDateString('pt-BR'),
+                    fotos: finalPhotos,
+                    termoGerado: true,
+                    assinatura: signatureData
+                };
+            } else {
+                car = {
+                    id: "v-" + Date.now(),
+                    placa: placa,
+                    modelo: modelo,
+                    km: km,
+                    cliente: cliente,
+                    status: "orcamento",
+                    checkin: {
+                        data: new Date().toLocaleDateString('pt-BR'),
+                        fotos: finalPhotos,
+                        termoGerado: true,
+                        assinatura: signatureData
+                    },
+                    orcamento: {
+                        opcaoSelecionada: null,
+                        valores: {
+                            A: { descricao: "Pastilhas Brembo + Fluidos Premium + Calibração", total: 2450.00 },
+                            B: { descricao: "Pastilhas Cobreq + Fluido de Freio DOT 4", total: 1400.00 },
+                            C: { descricao: "Reparo Básico (Pastilhas Fras-Le)", total: 680.00 }
+                        }
+                    },
+                    servico: {
+                        tarefas: [
+                            { id: "t1", descricao: "Substituição das Pastilhas de Freio", fotos: { velha: null, nova: null, concluido: null }, concluida: false },
+                            { id: "t2", descricao: "Fluido de Freio e Reparo Geral", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
+                        ]
+                    }
+                };
+                appState.vehicles.push(car);
+            }
+
+            // Remove alert related to this car if exists
+            appState.alerts = appState.alerts.filter(a => a.placa !== placa);
+
+            saveDatabase();
+            
+            // Clean inputs
+            document.getElementById("checkin-placa").value = "";
+            document.getElementById("checkin-modelo").value = "";
+            document.getElementById("checkin-km").value = "";
+            document.getElementById("checkin-cliente").value = "";
+            checkinPhotos = { frente: null, traseira: null, esquerda: null, direita: null };
+            
+            zones.forEach(z => {
+                document.getElementById(`checkin-preview-${z}`).classList.add("hidden");
+                document.getElementById(`checkin-prompt-${z}`).classList.remove("hidden");
+            });
+
+            // Trigger success splash and routing to budget
+            showSuccessOverlay(
+                "Termo Gerado com Sucesso!",
+                `O veículo ${modelo} foi registrado e encaminhado para o Orçamento.`,
+                () => {
+                    const select = document.getElementById("budget-vehicle-select");
+                    select.value = car.id;
+                    navigateTo("screen-budget");
+                }
+            );
+        }
+
+        // -------------------------------------------------------------
+        // SCREEN 3: FLEXIBLE BUDGET
+        // -------------------------------------------------------------
+        function setupBudgetSelect() {
+            const select = document.getElementById("budget-vehicle-select");
+            select.addEventListener("change", () => {
+                renderBudgetDetails(select.value);
+            });
+        }
+
+        function renderBudget() {
+            const select = document.getElementById("budget-vehicle-select");
+            select.innerHTML = "";
+
+            const targetCars = appState.vehicles.filter(v => v.status === "orcamento");
+            
+            if (targetCars.length === 0) {
+                document.getElementById("budget-empty-state").classList.remove("hidden");
+                document.getElementById("budget-cards-container").classList.add("hidden");
+                return;
+            }
+
+            document.getElementById("budget-empty-state").classList.add("hidden");
+            document.getElementById("budget-cards-container").classList.remove("hidden");
+
+            targetCars.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = `${c.modelo} [${c.placa}]`;
+                select.appendChild(opt);
+            });
+
+            renderBudgetDetails(select.value);
+        }
+
+        function renderBudgetDetails(vehicleId) {
+            const v = appState.vehicles.find(veh => veh.id === vehicleId);
+            if (!v) return;
+
+            const valA = v.orcamento.valores.A;
+            const valB = v.orcamento.valores.B;
+            const valC = v.orcamento.valores.C;
+
+            // Fill prices
+            document.getElementById("budget-optA-price").textContent = valA.total.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById("budget-optA-title").textContent = valA.descricao;
+            
+            document.getElementById("budget-optB-price").textContent = valB.total.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById("budget-optB-title").textContent = valB.descricao;
+            
+            document.getElementById("budget-optC-price").textContent = valC.total.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById("budget-optC-title").textContent = valC.descricao;
+        }
+
+        function approveBudget(optionCode) {
+            const select = document.getElementById("budget-vehicle-select");
+            const vId = select.value;
+            const v = appState.vehicles.find(veh => veh.id === vId);
+            if (!v) return;
+
+            // Mutate state
+            v.status = "execucao";
+            v.orcamento.opcaoSelecionada = optionCode;
+            saveDatabase();
+
+            showSuccessOverlay(
+                "Orçamento Aprovado!",
+                `Opção ${optionCode} autorizada pelo cliente. Veículo direcionado ao Box de Serviço.`,
+                () => {
+                    const boxSelect = document.getElementById("box-vehicle-select");
+                    boxSelect.value = v.id;
+                    navigateTo("screen-box");
+                }
+            );
+        }
+
+        // -------------------------------------------------------------
+        // SCREEN 4: BOX DE SERVIÇO (MECÂNICO CHECKLISTS)
+        // -------------------------------------------------------------
+        function setupBoxSelect() {
+            const select = document.getElementById("box-vehicle-select");
+            select.addEventListener("change", () => {
+                renderBoxTasks(select.value);
+            });
+        }
+
+        function renderBox() {
+            const select = document.getElementById("box-vehicle-select");
+            select.innerHTML = "";
+
+            const activeCars = appState.vehicles.filter(v => v.status === "execucao");
+
+            if (activeCars.length === 0) {
+                document.getElementById("box-empty-state").classList.remove("hidden");
+                document.getElementById("box-content-wrapper").classList.add("hidden");
+                return;
+            }
+
+            document.getElementById("box-empty-state").classList.add("hidden");
+            document.getElementById("box-content-wrapper").classList.remove("hidden");
+
+            activeCars.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = `${c.modelo} [${c.placa}]`;
+                select.appendChild(opt);
+            });
+
+            renderBoxTasks(select.value);
+        }
+
+        function renderBoxTasks(vehicleId) {
+            const v = appState.vehicles.find(veh => veh.id === vehicleId);
+            if (!v) return;
+
+            const container = document.getElementById("box-tasks-list");
+            container.innerHTML = "";
+
+            let totalUploadSlots = v.servico.tarefas.length * 3;
+            let filledSlots = 0;
+
+            v.servico.tarefas.forEach(task => {
+                const card = document.createElement("div");
+                card.className = `glass-card p-5 rounded-2xl flex flex-col gap-4 border-l-4 transition ${task.concluida ? 'border-l-emerald-500 bg-emerald-950/5' : 'border-l-indigo-500'}`;
+                
+                // Count uploads for task completion
+                if (task.fotos.velha) filledSlots++;
+                if (task.fotos.nova) filledSlots++;
+                if (task.fotos.concluido) filledSlots++;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${task.concluida ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-indigo-400 border border-indigo-500/20'}">
+                                ${task.concluida ? '✓' : '!'}
+                            </div>
+                            <h4 class="text-sm font-bold text-white">${task.descricao}</h4>
+                        </div>
+                        <span class="text-[9px] font-bold tracking-wider uppercase bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-slate-400">Auditoria</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 mt-1">
+                        <!-- Peça Velha -->
+                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'velha')">
+                            <input type="file" accept="image/*" class="hidden" id="file-${task.id}-velha" onchange="handleTaskFileSelect(event, '${task.id}', 'velha')">
+                            <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">1. Peça Velha</span>
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                            ${task.fotos.velha ? `<img src="${task.fotos.velha}" class="absolute inset-0 w-full h-full object-cover z-10">` : ''}
+                            <button type="button" class="absolute bottom-1 right-1 bg-indigo-600/90 text-white text-[7px] font-extrabold uppercase px-1 rounded shadow-sm z-20 hover:bg-indigo-500" onclick="mockTaskPhoto(event, '${task.id}', 'velha')">MOCK</button>
+                        </div>
+
+                        <!-- Peça Nova -->
+                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'nova')">
+                            <input type="file" accept="image/*" class="hidden" id="file-${task.id}-nova" onchange="handleTaskFileSelect(event, '${task.id}', 'nova')">
+                            <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">2. Peça Nova</span>
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                            ${task.fotos.nova ? `<img src="${task.fotos.nova}" class="absolute inset-0 w-full h-full object-cover z-10">` : ''}
+                            <button type="button" class="absolute bottom-1 right-1 bg-indigo-600/90 text-white text-[7px] font-extrabold uppercase px-1 rounded shadow-sm z-20 hover:bg-indigo-500" onclick="mockTaskPhoto(event, '${task.id}', 'nova')">MOCK</button>
+                        </div>
+
+                        <!-- Concluído -->
+                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'concluido')">
+                            <input type="file" accept="image/*" class="hidden" id="file-${task.id}-concluido" onchange="handleTaskFileSelect(event, '${task.id}', 'concluido')">
+                            <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">3. Instalada</span>
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                            ${task.fotos.concluido ? `<img src="${task.fotos.concluido}" class="absolute inset-0 w-full h-full object-cover z-10">` : ''}
+                            <button type="button" class="absolute bottom-1 right-1 bg-indigo-600/90 text-white text-[7px] font-extrabold uppercase px-1 rounded shadow-sm z-20 hover:bg-indigo-500" onclick="mockTaskPhoto(event, '${task.id}', 'concluido')">MOCK</button>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            // Update Progress bar details
+            const progressVal = Math.round((filledSlots / totalUploadSlots) * 100);
+            document.getElementById("box-progress-percentage").textContent = `${progressVal}%`;
+            document.getElementById("box-progress-bar").style.width = `${progressVal}%`;
+
+            // Append checkout button directly at end of card box
+            const footerBtnWrapper = document.createElement("div");
+            footerBtnWrapper.className = "mt-2";
+            footerBtnWrapper.innerHTML = `
+                <button type="button" id="btn-box-checkout" class="w-full py-3.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 active:scale-[0.98] ${progressVal === 100 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'}" ${progressVal === 100 ? '' : 'disabled'}>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Concluir Serviço e Liberar Carro
+                </button>
+            `;
+            footerBtnWrapper.querySelector("button").addEventListener("click", () => {
+                completeService(v.id);
+            });
+            container.appendChild(footerBtnWrapper);
+        }
+
+        function triggerTaskUpload(taskId, photoType) {
+            document.getElementById(`file-${taskId}-${photoType}`).click();
+        }
+
+        function handleTaskFileSelect(event, taskId, photoType) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    saveTaskPhoto(taskId, photoType, e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function mockTaskPhoto(event, taskId, photoType) {
+            event.stopPropagation();
+            let mockUrl = PHOTOS_MOCK_DATABASE.task_old;
+            if (photoType === "nova") mockUrl = PHOTOS_MOCK_DATABASE.task_new;
+            if (photoType === "concluido") mockUrl = PHOTOS_MOCK_DATABASE.task_done;
+
+            saveTaskPhoto(taskId, photoType, mockUrl);
+            showToast(`Foto de box para ${photoType} simulada!`);
+        }
+
+        function saveTaskPhoto(taskId, photoType, dataUrl) {
+            const select = document.getElementById("box-vehicle-select");
+            const v = appState.vehicles.find(veh => veh.id === select.value);
+            if (!v) return;
+
+            const task = v.servico.tarefas.find(t => t.id === taskId);
+            if (!task) return;
+
+            task.fotos[photoType] = dataUrl;
+
+            // Re-eval Task completion
+            if (task.fotos.velha && task.fotos.nova && task.fotos.concluido) {
+                task.concluida = true;
+            } else {
+                task.concluida = false;
+            }
+
+            saveDatabase();
+            renderBoxTasks(v.id);
+        }
+
+        function completeService(vehicleId) {
+            const v = appState.vehicles.find(veh => veh.id === vehicleId);
+            if (!v) return;
+
+            // Complete operations state
+            v.status = "pronto";
+            saveDatabase();
+
+            showSuccessOverlay(
+                "Serviço Concluído!",
+                "Carro liberado e Dossiê Final auditado gerado automaticamente.",
+                () => {
+                    const select = document.getElementById("dossier-vehicle-select");
+                    select.value = v.id;
+                    navigateTo("screen-dossier");
+                }
+            );
+        }
+
+        // -------------------------------------------------------------
+        // SCREEN 5: CLIENT DOSSIER HISTORY (LINHA DO TEMPO)
+        // -------------------------------------------------------------
+        function setupDossierSelect() {
+            const select = document.getElementById("dossier-vehicle-select");
+            select.addEventListener("change", () => {
+                renderDossierDetails(select.value);
+            });
+
+            // Bind Share Action
+            document.getElementById("btn-share-dossier").addEventListener("click", () => {
+                const v = appState.vehicles.find(veh => veh.id === select.value);
+                if (!v) return;
+                
+                const mockUrl = `https://cerracar.com/dossie/${v.id}`;
+                navigator.clipboard.writeText(mockUrl).then(() => {
+                    showToast("Link de auditoria copiado para área de transferência!");
+                }).catch(() => {
+                    showToast("Compartilhando no WhatsApp...");
+                });
+            });
+        }
+
+        function renderDossier() {
+            const select = document.getElementById("dossier-vehicle-select");
+            select.innerHTML = "";
+
+            // Show all vehicles for flexible dashboard audits
+            appState.vehicles.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = `${c.modelo} [${c.placa}]`;
+                select.appendChild(opt);
+            });
+
+            renderDossierDetails(select.value);
+        }
+
+        function renderDossierDetails(vehicleId) {
+            const v = appState.vehicles.find(veh => veh.id === vehicleId);
+            if (!v) return;
+
+            // Update top bar
+            document.getElementById("dossier-car-name").textContent = v.modelo;
+            document.getElementById("dossier-car-meta").textContent = `Proprietário: ${v.cliente} • KM Atual: ${parseInt(v.km).toLocaleString('pt-BR')} KM`;
+            document.getElementById("dossier-car-plate").textContent = v.placa;
+
+            const statusBadge = document.getElementById("dossier-car-status");
+            let label = "Fase Inicial";
+            let c = "bg-orange-500/10 text-orange-400 border-orange-500/20";
+            if (v.status === "orcamento") {
+                label = "Orçamento";
+                c = "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
+            } else if (v.status === "execucao") {
+                label = "No Box";
+                c = "bg-indigo-400/10 text-indigo-300 border-indigo-400/20";
+            } else if (v.status === "pronto") {
+                label = "Pronto";
+                c = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+            }
+            statusBadge.className = `text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-lg border ${c}`;
+            statusBadge.textContent = label;
+
+            // Render Timeline items
+            const timeline = document.getElementById("dossier-timeline");
+            timeline.innerHTML = "";
+
+            // 1. TIMELINE CHECK-IN (ENTRY)
+            const checkinTime = document.createElement("div");
+            checkinTime.className = "relative";
+            checkinTime.innerHTML = `
+                <span class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 flex items-center justify-center text-[9px] text-black font-extrabold">✓</span>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-emerald-400">Etapa 1 • Vistoria de Entrada</span>
+                <h4 class="text-sm font-bold text-white mt-0.5">Check-in Operacional Confirmado</h4>
+                <p class="text-slate-400 text-xs mt-1">Vistoria 360º concluída em <strong>${v.checkin.data || '02/06/2026'}</strong> com termo digital assinado eletronicamente.</p>
+                
+                <div class="grid grid-cols-4 gap-2 mt-3">
+                    <div class="timeline-photo-card p-1 bg-slate-900 border border-slate-800 rounded-lg">
+                        <img src="${v.checkin.fotos.frente || PHOTOS_MOCK_DATABASE.frente}" class="w-full aspect-[4/3] object-cover rounded">
+                        <span class="block text-[8px] font-bold text-center text-slate-500 uppercase mt-1">Frente</span>
+                    </div>
+                    <div class="timeline-photo-card p-1 bg-slate-900 border border-slate-800 rounded-lg">
+                        <img src="${v.checkin.fotos.traseira || PHOTOS_MOCK_DATABASE.traseira}" class="w-full aspect-[4/3] object-cover rounded">
+                        <span class="block text-[8px] font-bold text-center text-slate-500 uppercase mt-1">Traseira</span>
+                    </div>
+                    <div class="timeline-photo-card p-1 bg-slate-900 border border-slate-800 rounded-lg">
+                        <img src="${v.checkin.fotos.esquerda || PHOTOS_MOCK_DATABASE.esquerda}" class="w-full aspect-[4/3] object-cover rounded">
+                        <span class="block text-[8px] font-bold text-center text-slate-500 uppercase mt-1">Esquerda</span>
+                    </div>
+                    <div class="timeline-photo-card p-1 bg-slate-900 border border-slate-800 rounded-lg">
+                        <img src="${v.checkin.fotos.direita || PHOTOS_MOCK_DATABASE.direita}" class="w-full aspect-[4/3] object-cover rounded">
+                        <span class="block text-[8px] font-bold text-center text-slate-500 uppercase mt-1">Direita</span>
+                    </div>
+                </div>
+
+                ${v.checkin.assinatura ? `
+                    <div class="mt-3 flex items-center gap-3 bg-slate-900/60 p-2 border border-slate-800 rounded-xl self-start max-w-xs">
+                        <span class="text-[8px] font-bold text-slate-500 uppercase leading-none">Assinatura:</span>
+                        <img src="${v.checkin.assinatura}" class="h-6 bg-white rounded border border-slate-300">
+                    </div>
+                ` : ''}
+            `;
+            timeline.appendChild(checkinTime);
+
+            // 2. TIMELINE BUDGET (APPROVAL)
+            const budgetTime = document.createElement("div");
+            const isApproved = v.orcamento.opcaoSelecionada !== null;
+            
+            let budgetHtml = `
+                <span class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${isApproved ? 'bg-emerald-500 ring-4 ring-emerald-500/20 text-black' : 'bg-slate-800 border border-slate-700 text-slate-400'}">
+                    ${isApproved ? '✓' : '2'}
+                </span>
+                <span class="text-[9px] font-bold uppercase tracking-wider ${isApproved ? 'text-emerald-400' : 'text-slate-500'}">Etapa 2 • Aprovação Técnica</span>
+                <h4 class="text-sm font-bold mt-0.5 ${isApproved ? 'text-white' : 'text-slate-500'}">Aprovação do Orçamento</h4>
+            `;
+
+            if (isApproved) {
+                const opt = v.orcamento.opcaoSelecionada;
+                const budgetDetails = v.orcamento.valores[opt];
+                budgetHtml += `
+                    <p class="text-slate-400 text-xs mt-1">Orçamento aprovado pelo cliente com escopo na <strong>Opção ${opt} (${budgetDetails.descricao})</strong>.</p>
+                    <div class="text-sm font-bold text-indigo-400 mt-1">Total Autorizado: R$ ${budgetDetails.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                `;
+            } else {
+                budgetHtml += `<p class="text-slate-500 text-xs mt-1">Aguardando a seleção e aprovação de orçamento para iniciar os serviços.</p>`;
+            }
+
+            budgetTime.className = "relative";
+            budgetTime.innerHTML = budgetHtml;
+            timeline.appendChild(budgetTime);
+
+            // 3. TIMELINE BOX SERVICE
+            const serviceTime = document.createElement("div");
+            const tasks = v.servico.tarefas;
+            const allTasksCompleted = tasks.every(t => t.concluida);
+            const hasStartedService = tasks.some(t => t.fotos.velha || t.fotos.nova || t.fotos.concluido);
+
+            let serviceBadgeClass = "bg-slate-800 border border-slate-700 text-slate-400";
+            let serviceBadgeText = "3";
+            let serviceTitleClass = "text-slate-500";
+            let serviceSubtitleClass = "text-slate-500";
+            
+            if (allTasksCompleted) {
+                serviceBadgeClass = "bg-emerald-500 ring-4 ring-emerald-500/20 text-black";
+                serviceBadgeText = "✓";
+                serviceTitleClass = "text-white";
+                serviceSubtitleClass = "text-emerald-400";
+            } else if (hasStartedService) {
+                serviceBadgeClass = "bg-indigo-600 ring-4 ring-indigo-600/20 text-white";
+                serviceBadgeText = "●";
+                serviceTitleClass = "text-white";
+                serviceSubtitleClass = "text-indigo-400";
+            }
+
+            let tasksGalleryHtml = "";
+            if (hasStartedService) {
+                tasks.forEach(t => {
+                    const hasPhotos = t.fotos.velha || t.fotos.nova || t.fotos.concluido;
+                    tasksGalleryHtml += `
+                        <div class="mt-2.5 bg-slate-900/60 border border-slate-800 rounded-xl p-3">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xs font-bold ${t.concluida ? 'text-emerald-400' : 'text-indigo-400'}">${t.concluida ? '●' : '○'}</span>
+                                <h5 class="text-xs font-bold text-white">${t.descricao}</h5>
+                            </div>
+                            
+                            ${hasPhotos ? `
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="p-1 bg-slate-950 border border-slate-800 rounded-lg">
+                                        <img src="${t.fotos.velha || PHOTOS_MOCK_DATABASE.task_old}" class="w-full aspect-square object-cover rounded">
+                                        <span class="block text-[7px] font-bold text-center text-slate-500 uppercase mt-1">1. Peça Velha</span>
+                                    </div>
+                                    <div class="p-1 bg-slate-950 border border-slate-800 rounded-lg">
+                                        <img src="${t.fotos.nova || PHOTOS_MOCK_DATABASE.task_new}" class="w-full aspect-square object-cover rounded">
+                                        <span class="block text-[7px] font-bold text-center text-slate-500 uppercase mt-1">2. Nova</span>
+                                    </div>
+                                    <div class="p-1 bg-slate-950 border border-slate-800 rounded-lg">
+                                        <img src="${t.fotos.concluido || PHOTOS_MOCK_DATABASE.task_done}" class="w-full aspect-square object-cover rounded">
+                                        <span class="block text-[7px] font-bold text-center text-slate-500 uppercase mt-1">3. Instalada</span>
+                                    </div>
+                                </div>
+                            ` : `<p class="text-[10px] text-slate-500 italic">Mecânico no box aguardando execução.</p>`}
+                        </div>
+                    `;
+                });
+            }
+
+            serviceTime.className = "relative";
+            serviceTime.innerHTML = `
+                <span class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${serviceBadgeClass}">
+                    ${serviceBadgeText}
+                </span>
+                <span class="text-[9px] font-bold uppercase tracking-wider ${serviceSubtitleClass}">Etapa 3 • Execução Auditada</span>
+                <h4 class="text-sm font-bold mt-0.5 ${serviceTitleClass}">Auditoria e Troca das Peças</h4>
+                <p class="text-slate-400 text-xs mt-1">Acompanhamento transparente das trocas efetuadas pelo mecânico direto da oficina.</p>
+                ${tasksGalleryHtml}
+            `;
+            timeline.appendChild(serviceTime);
+
+            // 4. TIMELINE DELIVERY
+            const deliveryTime = document.createElement("div");
+            const isReady = v.status === "pronto";
+            
+            deliveryTime.className = "relative";
+            deliveryTime.innerHTML = `
+                <span class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${isReady ? 'bg-emerald-500 ring-4 ring-emerald-500/20 text-black' : 'bg-slate-800 border border-slate-700 text-slate-400'}">
+                    ${isReady ? '✓' : '4'}
+                </span>
+                <span class="text-[9px] font-bold uppercase tracking-wider ${isReady ? 'text-emerald-400' : 'text-slate-500'}">Etapa 4 • Checkout de Entrega</span>
+                <h4 class="text-sm font-bold mt-0.5 ${isReady ? 'text-white' : 'text-slate-500'}">Carro Liberado</h4>
+                
+                ${isReady ? `
+                    <p class="text-slate-400 text-xs mt-1">Veículo passou pelo controle de qualidade final, higienização e está pronto para retirada.</p>
+                    <div class="mt-3 border border-slate-800 rounded-xl overflow-hidden max-w-sm">
+                        <img src="${PHOTOS_MOCK_DATABASE.final_delivery}" class="w-full h-40 object-cover">
+                    </div>
+                ` : `
+                    <p class="text-slate-500 text-xs mt-1">Aguardando a conclusão dos processos mecânicos de pátio.</p>
+                `}
+            `;
+            timeline.appendChild(deliveryTime);
+        }
+
+        // -------------------------------------------------------------
+        // GLOBAL UI HELPERS
+        // -------------------------------------------------------------
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-message").textContent = message;
+            toast.classList.remove("hidden");
+            
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 3000);
+        }
+
+        function showSuccessOverlay(title, subtitle, onComplete) {
+            const overlay = document.getElementById("success-overlay");
+            document.getElementById("success-title").textContent = title;
+            document.getElementById("success-message-subtitle") ? document.getElementById("success-message-subtitle").textContent = subtitle : document.getElementById("success-subtitle").textContent = subtitle;
+            
+            overlay.classList.remove("hidden");
+            
+            setTimeout(() => {
+                overlay.classList.add("hidden");
+                if (onComplete) onComplete();
+            }, 1800);
+        }
+    </script>
 </body>
 </html>
