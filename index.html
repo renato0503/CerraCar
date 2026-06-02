@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CerraCar MVP - Gestão de Oficina & Auditoria Extrema</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Device Wrapper -->
+    <div id="app-container">
+        
+        <!-- App Header (Visible on all screens) -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-logo">C</div>
+                <div class="brand-name">CerraCar</div>
+                <span class="brand-badge">MVP</span>
+            </div>
+            <div class="user-profile">
+                <div style="text-align: right; margin-right: 4px;">
+                    <p style="font-size: 11px; font-weight: 600; color: #fff;" id="header-user-role">Gerente</p>
+                    <p style="font-size: 9px; color: var(--text-muted);">Pátio Principal</p>
+                </div>
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="Avatar" class="user-avatar" id="header-user-avatar">
+            </div>
+        </header>
+
+        <!-- App Main Content Window -->
+        <main class="app-content" id="app-main-content">
+            
+            <!-- 1. DASHBOARD SCREEN -->
+            <section id="screen-dashboard" class="screen active">
+                <h1 class="screen-title">Painel Geral</h1>
+                <p class="screen-subtitle">Visão de fluxo e funil da oficina</p>
+                
+                <!-- Funnel Cards -->
+                <div class="funnel-container">
+                    <div class="funnel-card active" data-status="all">
+                        <div class="funnel-header">
+                            <span class="funnel-title">Todos</span>
+                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </div>
+                        <div class="funnel-count" id="count-all">0</div>
+                    </div>
+                    <div class="funnel-card" data-status="recepcao">
+                        <div class="funnel-header">
+                            <span class="funnel-title">Na Recepção</span>
+                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <div class="funnel-count" id="count-recepcao">0</div>
+                    </div>
+                    <div class="funnel-card" data-status="orcamento">
+                        <div class="funnel-header">
+                            <span class="funnel-title">Orçamento</span>
+                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <div class="funnel-count" id="count-orcamento">0</div>
+                    </div>
+                    <div class="funnel-card" data-status="execucao">
+                        <div class="funnel-header">
+                            <span class="funnel-title">Em Execução</span>
+                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                        </div>
+                        <div class="funnel-count" id="count-execucao">0</div>
+                    </div>
+                    <div class="funnel-card" style="grid-column: span 2;" data-status="pronto">
+                        <div class="funnel-header">
+                            <span class="funnel-title">Pronto para Entrega</span>
+                            <svg class="funnel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <div class="funnel-count" id="count-pronto">0</div>
+                    </div>
+                </div>
+
+                <!-- Commercial Alerts Section -->
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Alertas Comerciais
+                    </h3>
+                </div>
+                <div id="alerts-container">
+                    <!-- Dynamic Alerts will be loaded here -->
+                </div>
+
+                <!-- Active Vehicles List -->
+                <div class="section-header" style="margin-top: 20px;">
+                    <h3 class="section-title">Veículos Ativos</h3>
+                </div>
+                <div id="dashboard-vehicles-list">
+                    <!-- Vehicles will be populated by JS -->
+                </div>
+            </section>
+
+
+            <!-- 2. CHECK-IN SCREEN -->
+            <section id="screen-checkin" class="screen">
+                <h1 class="screen-title">Check-in</h1>
+                <p class="screen-subtitle">Recepção do veículo e registro de danos</p>
+                
+                <form id="checkin-form">
+                    <div class="form-group">
+                        <label class="form-label" for="input-placa">Placa do Veículo</label>
+                        <input type="text" id="input-placa" class="form-control" placeholder="Ex: ABC1D23" required style="text-transform: uppercase;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="input-modelo">Marca & Modelo</label>
+                        <input type="text" id="input-modelo" class="form-control" placeholder="Ex: Honda Civic 2.0 EXL" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="input-km">Quilometragem (KM)</label>
+                        <input type="number" id="input-km" class="form-control" placeholder="Ex: 52400" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="input-cliente">Nome do Cliente</label>
+                        <input type="text" id="input-cliente" class="form-control" placeholder="Ex: Carlos Eduardo" required>
+                    </div>
+
+                    <!-- 360 Visual Damage Registry -->
+                    <div class="form-group" style="margin-top: 24px;">
+                        <label class="form-label">Inspeção Visual 360°</label>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -4px;">Carregue fotos ou use os botões "MOCK" para simular</p>
+                        
+                        <div class="inspection-grid">
+                            <!-- Frente -->
+                            <div class="photo-upload-zone" id="zone-frente">
+                                <span class="btn-simulate-photo" data-zone="frente" data-mock-img="car_front.jpg">MOCK</span>
+                                <input type="file" id="file-frente" accept="image/*" style="display:none;">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                <span class="upload-label">1. Frente</span>
+                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            </div>
+
+                            <!-- Traseira -->
+                            <div class="photo-upload-zone" id="zone-traseira">
+                                <span class="btn-simulate-photo" data-zone="traseira" data-mock-img="car_back.jpg">MOCK</span>
+                                <input type="file" id="file-traseira" accept="image/*" style="display:none;">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                <span class="upload-label">2. Traseira</span>
+                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            </div>
+
+                            <!-- Lateral Esquerda -->
+                            <div class="photo-upload-zone" id="zone-esquerda">
+                                <span class="btn-simulate-photo" data-zone="esquerda" data-mock-img="car_left.jpg">MOCK</span>
+                                <input type="file" id="file-esquerda" accept="image/*" style="display:none;">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                <span class="upload-label">3. Lat. Esquerda</span>
+                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            </div>
+
+                            <!-- Lateral Direita -->
+                            <div class="photo-upload-zone" id="zone-direita">
+                                <span class="btn-simulate-photo" data-zone="direita" data-mock-img="car_right.jpg">MOCK</span>
+                                <input type="file" id="file-direita" accept="image/*" style="display:none;">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                <span class="upload-label">4. Lat. Direita</span>
+                                <img src="" alt="Preview" class="upload-preview" style="display:none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-generate-checkin" class="btn btn-primary" style="margin-top: 10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Gerar Termo de Entrada
+                    </button>
+                </form>
+            </section>
+
+
+            <!-- 3. FLEXIBLE BUDGET SCREEN -->
+            <section id="screen-budget" class="screen">
+                <h1 class="screen-title">Orçamento</h1>
+                <p class="screen-subtitle">Comparativo flexível de opções</p>
+
+                <!-- Vehicle Selector for Demo -->
+                <div class="vehicle-selector-wrapper card">
+                    <label class="form-label" for="budget-vehicle-select">Selecionar Carro para Orçamento:</label>
+                    <select id="budget-vehicle-select" class="form-control">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <div id="budget-empty-state" class="card" style="text-align: center; padding: 30px; display: none;">
+                    <p style="color: var(--text-muted);">Não há veículos aguardando aprovação de orçamento no momento.</p>
+                </div>
+
+                <div id="budget-content-wrapper">
+                    <!-- Option A -->
+                    <div class="budget-options">
+                        <div class="budget-card recommended" id="option-a-card" data-option="A">
+                            <div class="budget-header">
+                                <div>
+                                    <span class="budget-label">Opção A</span>
+                                    <h4 class="budget-title">Peças Originais</h4>
+                                </div>
+                                <div class="budget-price">
+                                    <span style="font-size: 11px;">R$</span> 1.850<span style="font-size: 11px;">,00</span>
+                                </div>
+                            </div>
+                            <ul class="budget-features">
+                                <li>Pastilhas de Freio Originais de Fábrica</li>
+                                <li>Fluidos de Freio Homologados de Alta Performance</li>
+                                <li>Garantia Completa de 12 Meses</li>
+                                <li>Lavagem Ecológica Premium Cortesia</li>
+                            </ul>
+                            <button type="button" class="btn btn-cyan btn-sm btn-approve-budget" data-option="A">Aprovar Opção A</button>
+                        </div>
+
+                        <!-- Option B -->
+                        <div class="budget-card" id="option-b-card" data-option="B">
+                            <div class="budget-header">
+                                <div>
+                                    <span class="budget-label">Opção B</span>
+                                    <h4 class="budget-title">Peças Paralelas</h4>
+                                </div>
+                                <div class="budget-price">
+                                    <span style="font-size: 11px;">R$</span> 1.200<span style="font-size: 11px;">,00</span>
+                                </div>
+                            </div>
+                            <ul class="budget-features">
+                                <li>Pastilhas Importadas de Primeira Linha (Cobreq)</li>
+                                <li>Fluido de Freio DOT4 Padrão</li>
+                                <li>Garantia de 6 Meses</li>
+                                <li>Inspeção de Segurança básica</li>
+                            </ul>
+                            <button type="button" class="btn btn-secondary btn-sm btn-approve-budget" data-option="B" style="border: 1px solid var(--accent-cyan); color: var(--accent-cyan);">Aprovar Opção B</button>
+                        </div>
+
+                        <!-- Option C -->
+                        <div class="budget-card" id="option-c-card" data-option="C">
+                            <div class="budget-header">
+                                <div>
+                                    <span class="budget-label">Opção C</span>
+                                    <h4 class="budget-title font-danger">Apenas o Essencial</h4>
+                                </div>
+                                <div class="budget-price">
+                                    <span style="font-size: 11px;">R$</span> 450<span style="font-size: 11px;">,00</span>
+                                </div>
+                            </div>
+                            <ul class="budget-features">
+                                <li>Pastilhas de Freio Standard (Sem ruído reduzido)</li>
+                                <li>Reaproveitamento de fluido existente (se seguro)</li>
+                                <li>Garantia Legal de 3 Meses</li>
+                            </ul>
+                            <button type="button" class="btn btn-secondary btn-sm btn-approve-budget" data-option="C" style="border: 1px solid var(--accent-orange); color: var(--accent-orange);">Aprovar Opção C</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 4. BOX MECHANIC SCREEN -->
+            <section id="screen-box" class="screen">
+                <h1 class="screen-title">Box de Serviço</h1>
+                <p class="screen-subtitle">Painel de execução & auditoria do mecânico</p>
+
+                <!-- Vehicle Selector for Mechanic -->
+                <div class="vehicle-selector-wrapper card">
+                    <label class="form-label" for="box-vehicle-select">Selecionar Carro em Manutenção:</label>
+                    <select id="box-vehicle-select" class="form-control">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <div id="box-empty-state" class="card" style="text-align: center; padding: 30px; display: none;">
+                    <p style="color: var(--text-muted);">Não há veículos em execução no box atualmente.</p>
+                </div>
+
+                <div id="box-content-wrapper">
+                    <!-- Global OS Progress -->
+                    <div class="card" style="padding: 12px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                            <span style="color: var(--text-muted);">Progresso Geral da O.S.</span>
+                            <span id="os-progress-percentage" style="color: var(--accent-cyan); font-weight: bold;">0%</span>
+                        </div>
+                        <div class="task-progress-bar">
+                            <div class="task-progress-fill" id="os-progress-bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist Container -->
+                    <div id="mechanic-tasks-container">
+                        <!-- Task cards will be generated by JS -->
+                    </div>
+
+                    <!-- Finish O.S. Button -->
+                    <button type="button" id="btn-finish-os" class="btn btn-primary" style="margin-top: 10px;" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Concluir Serviço e Liberar Veículo
+                    </button>
+                </div>
+            </section>
+
+
+            <!-- 5. CLIENT DOSSIER SCREEN -->
+            <section id="screen-dossier" class="screen">
+                <h1 class="screen-title">Dossiê de Serviço</h1>
+                <p class="screen-subtitle">Relatório inquestionável de auditabilidade</p>
+
+                <!-- Vehicle Selector for Dossier -->
+                <div class="vehicle-selector-wrapper card">
+                    <label class="form-label" for="dossier-vehicle-select">Selecionar Histórico do Carro:</label>
+                    <select id="dossier-vehicle-select" class="form-control">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <div id="dossier-content-wrapper">
+                    <!-- Vehicle Info Header -->
+                    <div class="card" style="background: linear-gradient(135deg, var(--bg-secondary), rgba(0,240,255,0.05)); border-color: var(--border-color-glow); padding: 18px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3 id="dossier-modelo" style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Honda Civic Touring</h3>
+                                <p id="dossier-cliente-km" style="font-size: 12px; color: var(--text-muted);">Cliente: João Silva • Quilometragem: 50.000 KM</p>
+                            </div>
+                            <span id="dossier-placa" class="vehicle-plate" style="font-size: 13px; padding: 4px 8px;">ABC-1234</span>
+                        </div>
+                    </div>
+
+                    <!-- Beautiful Timeline -->
+                    <div class="dossier-timeline" id="dossier-timeline-container">
+                        <!-- Dynamic timeline items loaded by JS -->
+                    </div>
+
+                    <button type="button" id="btn-share-dossier" class="btn btn-cyan">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        Compartilhar via WhatsApp
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Digital Signature Modal Overlay -->
+        <div class="modal-overlay" id="signature-modal">
+            <div class="modal-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 16px; font-weight: 600;">Assinatura do Cliente</h3>
+                    <button type="button" id="btn-close-signature" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 16px;">✕</button>
+                </div>
+                <p style="font-size: 12px; color: var(--text-muted);">O cliente concorda com os termos de vistoria de entrada e autoriza a análise técnica.</p>
+                
+                <div class="canvas-container">
+                    <canvas id="signature-canvas"></canvas>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button type="button" id="btn-clear-signature" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 13px;">Limpar</button>
+                    <button type="button" id="btn-save-signature" class="btn btn-primary" style="flex: 2; padding: 10px; font-size: 13px;">Confirmar Entrada</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Checkmark Animation Overlay -->
+        <div class="success-checkmark-overlay" id="success-overlay">
+            <div class="checkmark-circle">✓</div>
+            <div class="success-text" id="success-message-title">Operação Concluída</div>
+            <div class="success-subtext" id="success-message-subtitle">O status do veículo foi atualizado com sucesso.</div>
+        </div>
+
+        <!-- Floating Toast Alert -->
+        <div id="toast">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span id="toast-message">Notificação de Sistema</span>
+        </div>
+
+        <!-- Persistent Navigation Bottom Bar -->
+        <nav class="app-nav">
+            <button class="nav-item active" data-screen="screen-dashboard">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" data-screen="screen-checkin">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Check-in</span>
+            </button>
+            <button class="nav-item" data-screen="screen-budget">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <span>Orçamento</span>
+            </button>
+            <button class="nav-item" data-screen="screen-box">
+                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                <span>Mecânico</span>
+            </button>
+            <button class="nav-item" data-screen="screen-dossier">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>Dossiê</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
