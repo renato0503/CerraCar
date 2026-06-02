@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CerraCar - Sistema de Gestão & Auditoria Extrema</title>
+    <script>
+        // Silence Tailwind CDN warning in console (must run before Tailwind loads)
+        (function() {
+            const originalWarn = console.warn;
+            console.warn = function(...args) {
+                if (args[0] && typeof args[0] === 'string' && (args[0].includes('cdn.tailwindcss.com') || args[0].includes('should not be used in production'))) {
+                    return;
+                }
+                originalWarn.apply(console, args);
+            };
+        })();
+    </script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,10 +24,17 @@
                 extend: {
                     colors: {
                         slate: {
-                            950: '#080c14',
-                            900: '#111827',
-                            800: '#1f2937',
-                            700: '#374151'
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717',
+                            950: '#0A0A0A'
                         }
                     },
                     borderRadius: {
@@ -31,23 +50,23 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #060910;
+            background-color: #0A0A0A;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(156, 163, 175, 0.03) 0px, transparent 50%);
             overflow-x: hidden;
         }
 
         /* Glassmorphism card properties */
         .glass-card {
-            background: rgba(17, 24, 39, 0.7);
+            background: rgba(23, 23, 23, 0.75);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .glass-card:hover {
-            border-color: rgba(99, 102, 241, 0.2);
-            box-shadow: 0 10px 30px -15px rgba(99, 102, 241, 0.25);
+            border-color: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
         }
 
         /* SPA Screen Transitions */
@@ -84,6 +103,93 @@
         .tap-highlight-transparent {
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* SVG Damage States */
+        .svg-part-clean {
+            fill: rgba(30, 41, 59, 0.35) !important;
+            stroke: rgba(148, 163, 184, 0.4) !important;
+        }
+        .svg-part-riscado {
+            fill: rgba(245, 158, 11, 0.35) !important;
+            stroke: #f59e0b !important;
+            filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6));
+        }
+        .svg-part-amassado {
+            fill: rgba(239, 68, 68, 0.35) !important;
+            stroke: #ef4444 !important;
+            filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.7));
+        }
+        .svg-part-quebrado {
+            fill: rgba(220, 38, 38, 0.55) !important;
+            stroke: #dc2626 !important;
+            filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.9));
+            animation: svgPulse 1.5s infinite alternate;
+        }
+        @keyframes svgPulse {
+            0% { fill-opacity: 0.3; }
+            100% { fill-opacity: 0.85; }
+        }
+
+        /* Demo Presenter Toolbar Styles */
+        .demo-toolbar {
+            position: fixed;
+            bottom: 80px; /* offset bottom tab bar on mobile */
+            right: 16px;
+            z-index: 100;
+        }
+        @media (min-width: 768px) {
+            .demo-toolbar {
+                bottom: 24px;
+                right: 24px;
+            }
+        }
+
+        /* Media Print styles */
+        @media print {
+            body {
+                background: white !important;
+                background-image: none !important;
+                color: black !important;
+                font-size: 12px;
+            }
+            aside, header, #mobile-bottom-nav, #workflow-hud-container, .demo-toolbar, #btn-share-dossier, .no-print, button, select, #desktop-role-select, #mobile-role-select, input {
+                display: none !important;
+            }
+            main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+            .glass-card {
+                background: white !important;
+                border: 1px solid #ccc !important;
+                color: black !important;
+                box-shadow: none !important;
+                backdrop-filter: none !important;
+            }
+            .text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400 {
+                color: black !important;
+            }
+            .text-amber-400, .text-amber-400, .text-amber-500, .text-amber-400 {
+                color: #111 !important;
+                font-weight: bold;
+            }
+            .bg-slate-900, .bg-slate-950, .bg-slate-950\/40, .bg-slate-900\/40, .bg-slate-900\/60, .bg-slate-950\/50, .bg-slate-950\/60 {
+                background: #f9f9f9 !important;
+                border-color: #ddd !important;
+            }
+            .border-slate-800, .border-slate-800\/80, .border-slate-700\/80 {
+                border-color: #ddd !important;
+            }
+            /* Make sure timeline is fully visible when printing */
+            #dossier-timeline {
+                border-left-color: #aaa !important;
+            }
+            .timeline-photo-card {
+                border-color: #ccc !important;
+                background: #fff !important;
+            }
+        }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen">
@@ -98,17 +204,17 @@
             <div class="flex flex-col gap-6">
                 <!-- Branding -->
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/35">C</div>
+                    <img src="logo.png" class="w-10 h-10 object-contain rounded-xl" alt="CerraCar Logo">
                     <div>
                         <h2 class="text-xl font-bold tracking-tight text-white leading-none">CerraCar</h2>
-                        <span class="text-[9px] font-semibold text-emerald-400 tracking-wider uppercase">Auditável</span>
+                        <span class="text-[9px] font-semibold text-amber-400 tracking-wider uppercase">Auditável</span>
                     </div>
                 </div>
 
                 <!-- Desktop Role Switcher -->
                 <div class="mt-2 p-3 bg-slate-950/60 rounded-xl border border-slate-800">
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Perfil de Acesso</label>
-                    <select id="desktop-role-select" class="w-full bg-slate-900 border border-slate-700/80 text-white rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer">
+                    <select id="desktop-role-select" class="w-full bg-slate-900 border border-slate-700/80 text-white rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-500 cursor-pointer">
                         <option value="gerente">📊 Gerente (Administrador)</option>
                         <option value="mecanico">🔧 Mecânico (Pátio)</option>
                         <option value="cliente">👤 Cliente Final</option>
@@ -123,7 +229,7 @@
 
             <!-- Footer Profile -->
             <div class="flex items-center gap-3 p-2 border-t border-slate-800/80 mt-auto pt-4">
-                <img id="desktop-profile-img" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" class="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover" alt="Profile">
+                <img id="desktop-profile-img" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100" class="w-10 h-10 rounded-full border-2 border-amber-500 object-cover" alt="Profile">
                 <div>
                     <h4 id="desktop-profile-name" class="text-sm font-semibold text-white leading-tight">Rodrigo Alencar</h4>
                     <span id="desktop-profile-title" class="text-xs text-slate-400">Gerente Geral</span>
@@ -136,13 +242,13 @@
         <!-- ========================================== -->
         <header class="md:hidden fixed top-0 left-0 right-0 h-16 bg-slate-900 border-b border-slate-800/80 px-4 flex items-center justify-between z-40">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center font-bold text-white shadow-md text-sm">C</div>
+                <img src="logo.png" class="w-8 h-8 object-contain rounded-lg" alt="CerraCar Logo">
                 <span class="text-lg font-bold text-white tracking-tight">CerraCar</span>
             </div>
             
             <!-- Mobile Role Switcher -->
             <div>
-                <select id="mobile-role-select" class="bg-slate-950 border border-slate-700/80 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer">
+                <select id="mobile-role-select" class="bg-slate-950 border border-slate-700/80 text-white rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-500 cursor-pointer">
                     <option value="gerente">Gerente</option>
                     <option value="mecanico">Mecânico</option>
                     <option value="cliente">Cliente</option>
@@ -154,6 +260,56 @@
         <!-- MAIN CONTENT CONTAINER                    -->
         <!-- ========================================== -->
         <main class="flex-1 bg-slate-950 md:ml-64 px-4 py-6 md:p-8 pt-20 md:pt-8 min-h-screen pb-24 md:pb-8 flex flex-col">
+
+            <!-- ------------------------------------------------------------- -->
+            <!-- STATE MACHINE PROGRESS HUD (Dynamic at the top)               -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="workflow-hud-container" class="mb-6 w-full hidden">
+                <div class="glass-card p-4 rounded-2xl bg-slate-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg uppercase border border-amber-500/20" id="hud-car-plate">ABC-1234</span>
+                        <h4 class="text-sm font-extrabold text-white" id="hud-car-name">Honda Civic</h4>
+                    </div>
+                    
+                    <!-- HUD Timeline -->
+                    <div class="flex-1 max-w-xl flex items-center justify-between text-[9px] font-bold text-slate-500 relative">
+                        <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-slate-800 -z-10" id="hud-timeline-line">
+                            <div class="h-full bg-amber-500 transition-all duration-300 w-0" id="hud-timeline-progress"></div>
+                        </div>
+                        
+                        <!-- Check-in -->
+                        <div class="flex flex-col items-center gap-1 bg-slate-950 px-1" id="hud-step-recepcao">
+                            <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center bg-slate-900 text-slate-400 step-dot">1</div>
+                            <span>Check-in</span>
+                        </div>
+                        <!-- Precificar -->
+                        <div class="flex flex-col items-center gap-1 bg-slate-950 px-1" id="hud-step-orcamento">
+                            <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center bg-slate-900 text-slate-400 step-dot">2</div>
+                            <span>Precificar</span>
+                        </div>
+                        <!-- Aprovação -->
+                        <div class="flex flex-col items-center gap-1 bg-slate-950 px-1" id="hud-step-aguardando_aprovacao">
+                            <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center bg-slate-900 text-slate-400 step-dot">3</div>
+                            <span>Decisão</span>
+                        </div>
+                        <!-- Box -->
+                        <div class="flex flex-col items-center gap-1 bg-slate-950 px-1" id="hud-step-execucao">
+                            <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center bg-slate-900 text-slate-400 step-dot">4</div>
+                            <span>Execução</span>
+                        </div>
+                        <!-- Vistoria -->
+                        <div class="flex flex-col items-center gap-1 bg-slate-950 px-1" id="hud-step-pronto_vistoria">
+                            <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center bg-slate-900 text-slate-400 step-dot">5</div>
+                            <span>Vistoria</span>
+                        </div>
+                        <!-- Entregue -->
+                        <div class="flex flex-col items-center gap-1 bg-slate-950 px-1" id="hud-step-pronto">
+                            <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center bg-slate-900 text-slate-400 step-dot">✓</div>
+                            <span>Liberado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- ------------------------------------------------------------- -->
             <!-- 1. DASHBOARD SCREEN (Gerente)                                 -->
@@ -177,22 +333,22 @@
                         <div class="text-2xl font-extrabold text-white" id="count-orcamento">0</div>
                     </div>
                     <!-- Aprovação (aguardando_aprovacao) -->
-                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-indigo-500 funnel-card" data-status="aguardando_aprovacao">
+                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-amber-500 funnel-card" data-status="aguardando_aprovacao">
                         <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2 leading-none">3. Aprovação</div>
                         <div class="text-2xl font-extrabold text-white" id="count-aguardando-aprovacao">0</div>
                     </div>
                     <!-- Execução (execucao) -->
-                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-indigo-400 funnel-card" data-status="execucao">
+                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-amber-400 funnel-card" data-status="execucao">
                         <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2 leading-none">4. No Box</div>
                         <div class="text-2xl font-extrabold text-white" id="count-execucao">0</div>
                     </div>
                     <!-- Vistoria (pronto_vistoria) -->
-                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-teal-500 funnel-card" data-status="pronto_vistoria">
+                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-slate-400 funnel-card" data-status="pronto_vistoria">
                         <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2 leading-none">5. Vistoria</div>
                         <div class="text-2xl font-extrabold text-white" id="count-pronto-vistoria">0</div>
                     </div>
                     <!-- Entregues (pronto) -->
-                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-emerald-500 funnel-card" data-status="pronto">
+                    <div class="glass-card p-3.5 rounded-xl flex flex-col justify-between cursor-pointer border-l-4 border-l-slate-300 funnel-card" data-status="pronto">
                         <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2 leading-none">6. Entregues</div>
                         <div class="text-2xl font-extrabold text-white" id="count-pronto">0</div>
                     </div>
@@ -201,11 +357,79 @@
                 <!-- Commercial Alerts -->
                 <div class="mb-6">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                         Alertas Comerciais Inteligentes
                     </h3>
                     <div id="dashboard-alerts-container" class="space-y-3">
                         <!-- Loaded dynamically -->
+                </div>
+
+                <!-- Desempenho e Gargalos (SVG Charts & Bottlenecks) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Donut Chart: Box Capacity & Bottlenecks -->
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Capacidade & Gargalos</h4>
+                            <div class="flex items-center justify-around gap-4 my-2">
+                                <div class="relative w-24 h-24">
+                                    <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                                        <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path id="dashboard-donut-segment" class="text-amber-500 transition-all duration-500" stroke-width="3.2" stroke-dasharray="60, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-lg font-extrabold text-white leading-none" id="dashboard-capacity-text">60%</span>
+                                        <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Box Ocupado</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded bg-amber-500"></span>
+                                        <span class="text-[10px] text-slate-300 font-semibold" id="lbl-box-active">3 Ativos</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded bg-slate-800"></span>
+                                        <span class="text-[10px] text-slate-400 font-semibold" id="lbl-box-vago">2 Vagos</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[10px] bg-red-500/10 border border-red-500/20 text-red-400 p-2.5 rounded-xl flex items-center gap-2 mt-2" id="bottleneck-alert">
+                            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                            <span class="font-medium" id="bottleneck-text">Gargalo: 1 carro aguardando aprovação/precificação!</span>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart: Faturamento e Ticket Médio (Real vs Potencial) -->
+                    <div class="glass-card p-5 rounded-2xl flex flex-col justify-between lg:col-span-2">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Metas e Faturamento Mensal</h4>
+                                <span class="text-[9px] font-extrabold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/25 uppercase tracking-wider">Meta: 85% Aprov.</span>
+                            </div>
+                            
+                            <!-- Simple custom SVG Bar Chart -->
+                            <div class="flex flex-col gap-3 my-2">
+                                <div>
+                                    <div class="flex justify-between text-[10px] font-bold mb-1">
+                                        <span class="text-amber-400 uppercase tracking-wider">Ticket Aprovado (Em Box ou Pronto)</span>
+                                        <span class="text-white" id="chart-val-approved">R$ 4.530,00</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-950 border border-slate-900 rounded-full overflow-hidden">
+                                        <div id="chart-bar-approved" class="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-500" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-[10px] font-bold mb-1">
+                                        <span class="text-amber-400 uppercase tracking-wider">Ticket Potencial (Orçamento ou Decisão)</span>
+                                        <span class="text-white" id="chart-val-potential">R$ 2.450,00</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-950 border border-slate-900 rounded-full overflow-hidden">
+                                        <div id="chart-bar-potential" class="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2">Valores dinâmicos calculados em tempo real com base no status operacional atual de cada carro no pátio.</p>
                     </div>
                 </div>
 
@@ -213,7 +437,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fila de Veículos Operacionais</h3>
-                        <span id="filter-indicator" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-indigo-400">Check-in</span>
+                        <span id="filter-indicator" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-amber-400">Check-in</span>
                     </div>
                     <div id="dashboard-vehicles-container" class="space-y-3">
                         <!-- Dynamic list -->
@@ -230,104 +454,184 @@
                         <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Check-in Técnico</h1>
                         <p class="text-slate-400 text-sm md:text-base">Mecânico: Diagnóstico físico inicial na chegada.</p>
                     </div>
-                    <button type="button" onclick="quickFillCheckin()" class="bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-500/40 text-indigo-400 text-xs font-bold px-3 py-2 rounded-xl transition tap-highlight-transparent active:scale-[0.98]">
+                    <button type="button" onclick="quickFillCheckin()" class="bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-bold px-3 py-2 rounded-xl transition tap-highlight-transparent active:scale-[0.98]">
                         ⚡ MOCK CIVIC
                     </button>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Form inputs -->
-                    <div class="lg:col-span-1 glass-card p-5 rounded-2xl flex flex-col gap-4">
-                        <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2">Vistoria Geral</h3>
-                        
-                        <div class="flex flex-col gap-1">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Placa do Veículo</label>
-                            <input type="text" id="checkin-placa" placeholder="Ex: ABC1D23" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white font-mono uppercase font-bold placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    <div class="lg:col-span-1 flex flex-col gap-4">
+                        <div class="glass-card p-5 rounded-2xl flex flex-col gap-4">
+                            <h3 class="text-base font-bold text-white border-b border-slate-800/80 pb-2">Vistoria Geral</h3>
+                            
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Placa do Veículo</label>
+                                <input type="text" id="checkin-placa" placeholder="Ex: ABC-1234" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white font-mono uppercase font-bold placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Marca & Modelo</label>
+                                <input type="text" id="checkin-modelo" placeholder="Ex: Honda Civic Touring" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Quilometragem Atual (KM)</label>
+                                <input type="number" id="checkin-km" placeholder="Ex: 50000" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Nome do Cliente</label>
+                                <input type="text" id="checkin-cliente" placeholder="Ex: João da Silva" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
                         </div>
 
-                        <div class="flex flex-col gap-1">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Marca & Modelo</label>
-                            <input type="text" id="checkin-modelo" placeholder="Ex: Honda Civic Touring" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
-                        </div>
+                        <!-- Damage Outline HUD Mapper -->
+                        <div class="glass-card p-5 rounded-2xl flex flex-col gap-3">
+                            <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                                <h3 class="text-sm font-bold text-white">Carroceria Interativa</h3>
+                                <button type="button" onclick="clearBodyworkDamages()" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold bg-slate-900 border border-slate-800 px-2 py-1 rounded-lg">Limpar Tudo</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 -mt-1">Clique diretamente no veículo para registrar e ciclar avarias: <strong>Riscado ➔ Amassado ➔ Quebrado ➔ Limpo</strong>.</p>
+                            
+                            <!-- Interactive SVG Diagram Container -->
+                            <div class="bg-slate-950/60 border border-slate-900 rounded-xl p-3.5 flex justify-center items-center relative">
+                                <svg viewBox="0 0 160 260" class="w-full max-w-[150px] mx-auto select-none" id="car-damage-svg">
+                                    <defs>
+                                        <pattern id="grid-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+                                            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+                                        </pattern>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grid-pattern)" rx="8" />
+                                    
+                                    <!-- Left Front Wheel -->
+                                    <rect id="svg-part-roda-fe" x="12" y="45" width="14" height="28" rx="4" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200" data-part="Roda Dianteira Esquerda"/>
+                                    <!-- Right Front Wheel -->
+                                    <rect id="svg-part-roda-fd" x="134" y="45" width="14" height="28" rx="4" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200" data-part="Roda Dianteira Direita"/>
+                                    <!-- Left Rear Wheel -->
+                                    <rect id="svg-part-roda-te" x="12" y="175" width="14" height="28" rx="4" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200" data-part="Roda Traseira Esquerda"/>
+                                    <!-- Right Rear Wheel -->
+                                    <rect id="svg-part-roda-td" x="134" y="175" width="14" height="28" rx="4" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200" data-part="Roda Traseira Direita"/>
 
-                        <div class="flex flex-col gap-1">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Quilometragem Atual (KM)</label>
-                            <input type="number" id="checkin-km" placeholder="Ex: 50000" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
-                        </div>
+                                    <!-- Front Bumper -->
+                                    <path id="svg-part-parachoque-dian" d="M 35 30 C 55 23, 105 23, 125 30 L 132 40 C 132 40, 110 33, 80 33 C 50 33, 28 40, 28 40 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Parachoque Dianteiro"/>
+                                    
+                                    <!-- Hood (Capô) -->
+                                    <path id="svg-part-capo" d="M 32 42 L 128 42 L 122 85 L 38 85 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Capô Dianteiro"/>
+                                    
+                                    <!-- Windshield (Para-brisa) -->
+                                    <path id="svg-part-parabrisa" d="M 40 89 L 120 89 L 114 110 L 46 110 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Para-brisa"/>
 
-                        <div class="flex flex-col gap-1">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Nome do Cliente</label>
-                            <input type="text" id="checkin-cliente" placeholder="Ex: João da Silva" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
-                        </div>
+                                    <!-- Left Front Door -->
+                                    <path id="svg-part-porta-fe" d="M 28 88 L 36 88 L 44 112 L 44 140 L 28 140 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Porta Dianteira Esquerda"/>
+                                    <!-- Right Front Door -->
+                                    <path id="svg-part-porta-fd" d="M 132 88 L 124 88 L 116 112 L 116 140 L 132 140 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Porta Dianteira Direita"/>
 
-                        <div class="flex flex-col gap-1">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Relato da Queixa do Cliente</label>
-                            <textarea id="checkin-queixa" rows="2" placeholder="Ex: Pedal de freio borrachudo e rangido na roda esquerda" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-xs resize-none"></textarea>
-                        </div>
+                                    <!-- Roof (Teto) -->
+                                    <path id="svg-part-teto" d="M 46 114 L 114 114 L 114 170 L 46 170 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Painel do Teto"/>
 
-                        <div class="flex flex-col gap-1">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Diagnóstico Técnico Prévio</label>
-                            <textarea id="checkin-diagnostico" rows="2" placeholder="Ex: Vazamento de fluido no cárter e pastilha traseira gasta" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-xs resize-none"></textarea>
+                                    <!-- Left Rear Door -->
+                                    <path id="svg-part-porta-te" d="M 28 142 L 44 142 L 44 185 L 30 195 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Porta Traseira Esquerda"/>
+                                    <!-- Right Rear Door -->
+                                    <path id="svg-part-porta-td" d="M 132 142 L 116 142 L 116 185 L 130 195 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Porta Traseira Direita"/>
+
+                                    <!-- Rear Windshield -->
+                                    <path id="svg-part-vidro-tras" d="M 46 174 L 114 174 L 118 190 L 42 190 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Vidro Traseiro"/>
+
+                                    <!-- Trunk / Rear Bumper -->
+                                    <path id="svg-part-parachoque-tras" d="M 32 198 L 128 198 L 124 225 C 105 232, 55 232, 36 225 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Parachoque Traseiro"/>
+                                    
+                                    <!-- Left Headlight -->
+                                    <path id="svg-part-farol-e" d="M 28 42 L 36 42 L 35 46 C 30 46, 28 44, 28 42 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Farol Esquerdo"/>
+                                    <!-- Right Headlight -->
+                                    <path id="svg-part-farol-d" d="M 132 42 L 124 42 L 125 46 C 130 46, 132 44, 132 42 Z" class="svg-part-clean hover:stroke-amber-400 cursor-pointer transition-all duration-200" data-part="Farol Direito"/>
+                                </svg>
+                            </div>
+
+                            <!-- Legend -->
+                            <div class="flex justify-between text-[9px] font-bold text-slate-400 px-1 border-t border-slate-900 pt-2.5">
+                                <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Riscado</div>
+                                <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> Amassado</div>
+                                <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span> Quebrado</div>
+                            </div>
+
+                            <div class="text-[10px] text-red-400 font-semibold mt-1 hidden" id="damage-warning-hud">
+                                Avarias: <span id="damage-selected-list" class="text-slate-200">Nenhuma avaria marcada</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- 360 Camera Grid -->
-                    <div class="lg:col-span-2 glass-card p-5 rounded-2xl flex flex-col gap-4">
-                        <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2">Inspeção Visual 360º</h3>
-                        <p class="text-xs text-slate-400 -mt-2">Obrigatório: Envie as 4 fotos de vistoria do veículo.</p>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Frente -->
-                            <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-frente" onclick="triggerCheckinFile('frente')">
-                                <input type="file" accept="image/*" class="hidden" id="checkin-file-frente" onchange="handleCheckinFileSelect(event, 'frente')">
-                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-frente">
-                                    <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">1. Frente</span>
-                                </div>
-                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-frente">
-                                <button type="button" class="absolute bottom-1.5 right-1.5 bg-indigo-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockCheckinPhoto(event, 'frente')">MOCK</button>
+                    <div class="lg:col-span-2 flex flex-col gap-4">
+                        <div class="glass-card p-5 rounded-2xl flex flex-col gap-4">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Relato da Queixa do Cliente</label>
+                                <textarea id="checkin-queixa" rows="2" placeholder="Ex: Pedal de freio borrachudo e rangido na roda esquerda" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 text-xs resize-none"></textarea>
                             </div>
 
-                            <!-- Traseira -->
-                            <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-traseira" onclick="triggerCheckinFile('traseira')">
-                                <input type="file" accept="image/*" class="hidden" id="checkin-file-traseira" onchange="handleCheckinFileSelect(event, 'traseira')">
-                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-traseira">
-                                    <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">2. Traseira</span>
-                                </div>
-                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-traseira">
-                                <button type="button" class="absolute bottom-1.5 right-1.5 bg-indigo-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockCheckinPhoto(event, 'traseira')">MOCK</button>
-                            </div>
-
-                            <!-- Lat. Esquerda -->
-                            <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-esquerda" onclick="triggerCheckinFile('esquerda')">
-                                <input type="file" accept="image/*" class="hidden" id="checkin-file-esquerda" onchange="handleCheckinFileSelect(event, 'esquerda')">
-                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-esquerda">
-                                    <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">3. Lat. Esquerda</span>
-                                </div>
-                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-esquerda">
-                                <button type="button" class="absolute bottom-1.5 right-1.5 bg-indigo-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockCheckinPhoto(event, 'esquerda')">MOCK</button>
-                            </div>
-
-                            <!-- Lat. Direita -->
-                            <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="checkin-zone-direita" onclick="triggerCheckinFile('direita')">
-                                <input type="file" accept="image/*" class="hidden" id="checkin-file-direita" onchange="handleCheckinFileSelect(event, 'direita')">
-                                <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="checkin-prompt-direita">
-                                    <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">4. Lat. Direita</span>
-                                </div>
-                                <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-direita">
-                                <button type="button" class="absolute bottom-1.5 right-1.5 bg-indigo-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockCheckinPhoto(event, 'direita')">MOCK</button>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Diagnóstico Técnico Prévio</label>
+                                <textarea id="checkin-diagnostico" rows="2" placeholder="Ex: Vazamento de fluido no cárter e pastilha traseira gasta" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 text-xs resize-none"></textarea>
                             </div>
                         </div>
 
-                        <!-- Submit trigger -->
-                        <div class="mt-2">
-                            <button type="button" onclick="triggerSignatureModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-600/20 active:scale-[0.98]">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                Coletar Assinatura do Cliente e Salvar
-                            </button>
+                        <div class="glass-card p-5 rounded-2xl flex flex-col gap-4">
+                            <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2">Inspeção Visual 360º</h3>
+                            <p class="text-xs text-slate-400 -mt-2">Obrigatório: Envie as 4 fotos de vistoria do veículo.</p>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Frente -->
+                                <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-amber-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden cursor-pointer" id="checkin-zone-frente" onclick="triggerCheckinFile('frente')">
+                                    <input type="file" accept="image/*" class="hidden" id="checkin-file-frente" onchange="handleCheckinFileSelect(event, 'frente')">
+                                    <div class="flex flex-col items-center group-hover:text-amber-400 transition" id="checkin-prompt-frente">
+                                        <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">1. Frente</span>
+                                    </div>
+                                    <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-frente">
+                                    <button type="button" class="absolute bottom-1.5 right-1.5 bg-amber-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockCheckinPhoto(event, 'frente')">MOCK</button>
+                                </div>
+
+                                <!-- Traseira -->
+                                <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-amber-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden cursor-pointer" id="checkin-zone-traseira" onclick="triggerCheckinFile('traseira')">
+                                    <input type="file" accept="image/*" class="hidden" id="checkin-file-traseira" onchange="handleCheckinFileSelect(event, 'traseira')">
+                                    <div class="flex flex-col items-center group-hover:text-amber-400 transition" id="checkin-prompt-traseira">
+                                        <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">2. Traseira</span>
+                                    </div>
+                                    <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-traseira">
+                                    <button type="button" class="absolute bottom-1.5 right-1.5 bg-amber-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockCheckinPhoto(event, 'traseira')">MOCK</button>
+                                </div>
+
+                                <!-- Lat. Esquerda -->
+                                <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-amber-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden cursor-pointer" id="checkin-zone-esquerda" onclick="triggerCheckinFile('esquerda')">
+                                    <input type="file" accept="image/*" class="hidden" id="checkin-file-esquerda" onchange="handleCheckinFileSelect(event, 'esquerda')">
+                                    <div class="flex flex-col items-center group-hover:text-amber-400 transition" id="checkin-prompt-esquerda">
+                                        <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">3. Lat. Esquerda</span>
+                                    </div>
+                                    <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-esquerda">
+                                    <button type="button" class="absolute bottom-1.5 right-1.5 bg-amber-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockCheckinPhoto(event, 'esquerda')">MOCK</button>
+                                </div>
+
+                                <!-- Lat. Direita -->
+                                <div class="relative h-28 rounded-xl border-2 border-dashed border-slate-800 hover:border-amber-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden cursor-pointer" id="checkin-zone-direita" onclick="triggerCheckinFile('direita')">
+                                    <input type="file" accept="image/*" class="hidden" id="checkin-file-direita" onchange="handleCheckinFileSelect(event, 'direita')">
+                                    <div class="flex flex-col items-center group-hover:text-amber-400 transition" id="checkin-prompt-direita">
+                                        <svg class="w-6 h-6 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">4. Lat. Direita</span>
+                                    </div>
+                                    <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="checkin-preview-direita">
+                                    <button type="button" class="absolute bottom-1.5 right-1.5 bg-amber-600/90 text-white text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockCheckinPhoto(event, 'direita')">MOCK</button>
+                                </div>
+                            </div>
+
+                            <!-- Submit trigger -->
+                            <div class="mt-4">
+                                <button type="button" onclick="triggerSignatureModal()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-amber-600/20 active:scale-[0.98]">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    Coletar Assinatura do Cliente e Salvar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -359,7 +663,7 @@
                 <div id="pricing-content-wrapper" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
                     <!-- Diagnostic summary card -->
                     <div class="lg:col-span-1 flex flex-col gap-4">
-                        <div class="glass-card p-5 rounded-2xl bg-gradient-to-b from-indigo-950/10 to-slate-900/60 border-l-4 border-l-amber-500">
+                        <div class="glass-card p-5 rounded-2xl bg-gradient-to-b from-slate-900/40 to-slate-900/60 border-l-4 border-l-amber-500">
                             <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Diagnóstico Técnico</h3>
                             <div class="space-y-3 text-xs">
                                 <div>
@@ -386,10 +690,10 @@
                             <!-- Opção A -->
                             <div class="p-4 bg-slate-950/50 rounded-xl border border-slate-800 flex flex-col gap-3">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Opção A (Premium Brembo)</span>
+                                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Opção A (Premium Brembo)</span>
                                     <div class="flex items-center gap-1.5 text-xs text-slate-400">
                                         <span>Garantia:</span>
-                                        <input type="text" id="pricing-optA-garantia" value="12 Meses" class="w-20 bg-slate-900 border border-slate-700 text-white rounded px-2 py-0.5 text-center font-bold">
+                                        <input type="text" id="pricing-optA-garantia" value="12 Meses" class="w-20 bg-slate-900 border border-slate-700 text-white rounded px-2 py-0.5 text-center font-bold text-xs">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -399,7 +703,7 @@
                                     </div>
                                     <div class="flex flex-col gap-1">
                                         <label class="text-[9px] font-bold text-slate-500 uppercase">Valor Total (R$)</label>
-                                        <input type="number" id="pricing-optA-total" value="2450" class="bg-slate-900 border border-slate-800 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none font-bold text-emerald-400">
+                                        <input type="number" id="pricing-optA-total" value="2450" class="bg-slate-900 border border-slate-800 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none font-bold text-amber-400">
                                     </div>
                                 </div>
                             </div>
@@ -410,7 +714,7 @@
                                     <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Opção B (Intermediária Cobreq)</span>
                                     <div class="flex items-center gap-1.5 text-xs text-slate-400">
                                         <span>Garantia:</span>
-                                        <input type="text" id="pricing-optB-garantia" value="6 Meses" class="w-20 bg-slate-900 border border-slate-700 text-white rounded px-2 py-0.5 text-center font-bold">
+                                        <input type="text" id="pricing-optB-garantia" value="6 Meses" class="w-20 bg-slate-900 border border-slate-700 text-white rounded px-2 py-0.5 text-center font-bold text-xs">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -420,7 +724,7 @@
                                     </div>
                                     <div class="flex flex-col gap-1">
                                         <label class="text-[9px] font-bold text-slate-500 uppercase">Valor Total (R$)</label>
-                                        <input type="number" id="pricing-optB-total" value="1400" class="bg-slate-900 border border-slate-800 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none font-bold text-emerald-400">
+                                        <input type="number" id="pricing-optB-total" value="1400" class="bg-slate-900 border border-slate-800 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none font-bold text-amber-400">
                                     </div>
                                 </div>
                             </div>
@@ -431,7 +735,7 @@
                                     <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Opção C (Básica Essencial)</span>
                                     <div class="flex items-center gap-1.5 text-xs text-slate-400">
                                         <span>Garantia:</span>
-                                        <input type="text" id="pricing-optC-garantia" value="3 Meses" class="w-20 bg-slate-900 border border-slate-700 text-white rounded px-2 py-0.5 text-center font-bold">
+                                        <input type="text" id="pricing-optC-garantia" value="3 Meses" class="w-20 bg-slate-900 border border-slate-700 text-white rounded px-2 py-0.5 text-center font-bold text-xs">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -441,12 +745,12 @@
                                     </div>
                                     <div class="flex flex-col gap-1">
                                         <label class="text-[9px] font-bold text-slate-500 uppercase">Valor Total (R$)</label>
-                                        <input type="number" id="pricing-optC-total" value="680" class="bg-slate-900 border border-slate-800 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none font-bold text-emerald-400">
+                                        <input type="number" id="pricing-optC-total" value="680" class="bg-slate-900 border border-slate-800 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none font-bold text-amber-400">
                                     </div>
                                 </div>
                             </div>
 
-                            <button type="button" onclick="submitPricing()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-bold transition text-xs shadow-lg shadow-indigo-600/15 active:scale-[0.98]">
+                            <button type="button" onclick="submitPricing()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 rounded-xl font-bold transition text-xs shadow-lg shadow-amber-600/15 active:scale-[0.98]">
                                 Enviar Orçamento para Cliente
                             </button>
                         </div>
@@ -479,10 +783,10 @@
 
                 <div id="budget-cards-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Opção A -->
-                    <div class="glass-card rounded-2xl border-2 border-indigo-500/80 p-6 flex flex-col justify-between relative bg-gradient-to-b from-indigo-950/20 to-slate-900/80">
-                        <span class="absolute top-3 right-3 bg-indigo-500 text-black text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider">RECOMENDADO</span>
+                    <div class="glass-card rounded-2xl border-2 border-amber-500/80 p-6 flex flex-col justify-between relative bg-gradient-to-b from-slate-900/40 to-slate-900/80">
+                        <span class="absolute top-3 right-3 bg-amber-500 text-black text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider">RECOMENDADO</span>
                         <div>
-                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Opção A (Premium)</span>
+                            <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Opção A (Premium)</span>
                             <h2 class="text-xl font-bold text-white mt-1" id="budget-optA-title">Pastilhas Brembo Premium</h2>
                             
                             <div class="my-5 flex items-baseline">
@@ -496,13 +800,13 @@
                                 <span class="font-bold text-white" id="budget-optA-warranty">12 Meses</span>
                             </div>
 
-                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6">
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Peças Brembo Originais de Fábrica</li>
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Fluidos de Freio Premium Importado</li>
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Calibração Eletrônica Completa</li>
+                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6" id="budget-optA-features">
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Peças Brembo Originais de Fábrica</li>
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Fluidos de Freio Premium Importado</li>
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Calibração Eletrônica Completa</li>
                             </ul>
                         </div>
-                        <button type="button" onclick="approveBudget('A')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg active:scale-[0.98]">Aprovar Opção Premium</button>
+                        <button type="button" onclick="approveBudget('A')" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg active:scale-[0.98]">Aprovar Opção Premium</button>
                     </div>
 
                     <!-- Opção B -->
@@ -522,10 +826,10 @@
                                 <span class="font-bold text-white" id="budget-optB-warranty">6 Meses</span>
                             </div>
 
-                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6">
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Pastilhas de Cerâmica Cobreq</li>
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Fluidos de Freio DOT 4 Padrão</li>
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Higienização Básica de Cubos</li>
+                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6" id="budget-optB-features">
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Pastilhas de Cerâmica Cobreq</li>
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Fluidos de Freio DOT 4 Padrão</li>
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Higienização Básica de Cubos</li>
                             </ul>
                         </div>
                         <button type="button" onclick="approveBudget('B')" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold py-3 rounded-xl text-xs transition active:scale-[0.98]">Aprovar Opção Intermediária</button>
@@ -548,9 +852,9 @@
                                 <span class="font-bold text-white" id="budget-optC-warranty">3 Meses</span>
                             </div>
 
-                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6">
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Pastilhas Standard de Segurança</li>
-                                <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Sangria Simples de Sistema</li>
+                            <ul class="space-y-2 text-xs text-slate-300 border-t border-slate-800/80 pt-4 mb-6" id="budget-optC-features">
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Pastilhas Standard de Segurança</li>
+                                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Sangria Simples de Sistema</li>
                             </ul>
                         </div>
                         <button type="button" onclick="approveBudget('C')" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold py-3 rounded-xl text-xs transition active:scale-[0.98]">Aprovar Opção Básica</button>
@@ -568,10 +872,16 @@
                         <p class="text-slate-400 text-sm md:text-base">Mecânico: Registre a auditoria fotográfica da manutenção do veículo.</p>
                     </div>
 
-                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64">
-                        <select id="box-vehicle-select" class="bg-transparent text-white text-xs font-semibold focus:outline-none w-full cursor-pointer">
-                            <!-- JS loaded -->
-                        </select>
+                    <div class="flex items-center gap-2 w-full sm:w-auto self-end">
+                        <button type="button" onclick="mockAllTasksPhotos()" class="bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-bold px-3 py-2 rounded-xl transition tap-highlight-transparent active:scale-[0.98] mr-2">
+                            ⚡ SIMULAR O.S.
+                        </button>
+                        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 0 1-2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 12-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"></path></svg>
+                            <select id="box-vehicle-select" class="bg-transparent text-white text-xs font-semibold focus:outline-none w-full cursor-pointer">
+                                <!-- JS loaded -->
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -589,10 +899,10 @@
                             <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2 mb-4">Progresso Geral</h3>
                             <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
                                 <span>Fotos da O.S. Enviadas</span>
-                                <span id="box-progress-percentage" class="text-emerald-400">0%</span>
+                                <span id="box-progress-percentage" class="text-amber-400">0%</span>
                             </div>
                             <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
-                                <div id="box-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-300 w-0"></div>
+                                <div id="box-progress-bar" class="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-300 w-0"></div>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-2">A auditoria exige obrigatoriamente todas as fotos do processo antes de liberar o checkout do carro.</p>
                         </div>
@@ -635,41 +945,41 @@
                         
                         <div class="space-y-3.5 mt-2">
                             <label class="flex items-start gap-3.5 cursor-pointer group text-xs">
-                                <input type="checkbox" id="chk-delivery-1" class="mt-0.5 rounded border-slate-700 text-indigo-600 bg-slate-950 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
+                                <input type="checkbox" id="chk-delivery-1" class="mt-0.5 rounded border-slate-700 text-amber-600 bg-slate-950 focus:ring-amber-500 w-4 h-4 cursor-pointer">
                                 <div>
-                                    <span class="text-white font-bold group-hover:text-indigo-400 transition">Rodas Apertadas com Torquímetro</span>
+                                    <span class="text-white font-bold group-hover:text-amber-400 transition">Rodas Apertadas com Torquímetro</span>
                                     <p class="text-[10px] text-slate-400">Verificação física da fixação e calibração das pastilhas e discos.</p>
                                 </div>
                             </label>
 
                             <label class="flex items-start gap-3.5 cursor-pointer group text-xs">
-                                <input type="checkbox" id="chk-delivery-2" class="mt-0.5 rounded border-slate-700 text-indigo-600 bg-slate-950 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
+                                <input type="checkbox" id="chk-delivery-2" class="mt-0.5 rounded border-slate-700 text-amber-600 bg-slate-950 focus:ring-amber-500 w-4 h-4 cursor-pointer">
                                 <div>
-                                    <span class="text-white font-bold group-hover:text-indigo-400 transition">Níveis de Fluidos e Sangria</span>
+                                    <span class="text-white font-bold group-hover:text-amber-400 transition">Níveis de Fluidos e Sangria</span>
                                     <p class="text-[10px] text-slate-400">Verificação de reservatório de freio e óleo em nível correto.</p>
                                 </div>
                             </label>
 
                             <label class="flex items-start gap-3.5 cursor-pointer group text-xs">
-                                <input type="checkbox" id="chk-delivery-3" class="mt-0.5 rounded border-slate-700 text-indigo-600 bg-slate-950 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
+                                <input type="checkbox" id="chk-delivery-3" class="mt-0.5 rounded border-slate-700 text-amber-600 bg-slate-950 focus:ring-amber-500 w-4 h-4 cursor-pointer">
                                 <div>
-                                    <span class="text-white font-bold group-hover:text-indigo-400 transition">Higienização e Lavagem Ecológica</span>
+                                    <span class="text-white font-bold group-hover:text-amber-400 transition">Higienização e Lavagem Ecológica</span>
                                     <p class="text-[10px] text-slate-400">Interior limpo, volante e alavancas higienizados.</p>
                                 </div>
                             </label>
 
                             <label class="flex items-start gap-3.5 cursor-pointer group text-xs">
-                                <input type="checkbox" id="chk-delivery-4" class="mt-0.5 rounded border-slate-700 text-indigo-600 bg-slate-950 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
+                                <input type="checkbox" id="chk-delivery-4" class="mt-0.5 rounded border-slate-700 text-amber-600 bg-slate-950 focus:ring-amber-500 w-4 h-4 cursor-pointer">
                                 <div>
-                                    <span class="text-white font-bold group-hover:text-indigo-400 transition">Teste de Rodagem Concluído</span>
+                                    <span class="text-white font-bold group-hover:text-amber-400 transition">Teste de Rodagem Concluído</span>
                                     <p class="text-[10px] text-slate-400">Verificação dinâmica em pista para atestar ruídos e pegada de freio.</p>
                                 </div>
                             </label>
 
                             <label class="flex items-start gap-3.5 cursor-pointer group text-xs">
-                                <input type="checkbox" id="chk-delivery-5" class="mt-0.5 rounded border-slate-700 text-indigo-600 bg-slate-950 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
+                                <input type="checkbox" id="chk-delivery-5" class="mt-0.5 rounded border-slate-700 text-amber-600 bg-slate-950 focus:ring-amber-500 w-4 h-4 cursor-pointer">
                                 <div>
-                                    <span class="text-white font-bold group-hover:text-indigo-400 transition">Recolhimento de Ferramentas</span>
+                                    <span class="text-white font-bold group-hover:text-amber-400 transition">Recolhimento de Ferramentas</span>
                                     <p class="text-[10px] text-slate-400">Garantir que ferramentas do pátio foram removidas do cofre do motor.</p>
                                 </div>
                             </label>
@@ -680,17 +990,17 @@
                     <div class="lg:col-span-1 glass-card p-5 rounded-2xl flex flex-col gap-4">
                         <h3 class="text-base font-bold text-white border-b border-slate-800 pb-2">Foto Final de Entrega</h3>
                         
-                        <div class="relative h-40 rounded-xl border-2 border-dashed border-slate-800 hover:border-indigo-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden" id="delivery-zone-photo" onclick="triggerDeliveryFile()">
+                        <div class="relative h-40 rounded-xl border-2 border-dashed border-slate-800 hover:border-amber-500 transition flex flex-col items-center justify-center text-center p-2 bg-slate-950/40 group overflow-hidden cursor-pointer" id="delivery-zone-photo" onclick="triggerDeliveryFile()">
                             <input type="file" accept="image/*" class="hidden" id="delivery-file-photo" onchange="handleDeliveryFileSelect(event)">
-                            <div class="flex flex-col items-center group-hover:text-indigo-400 transition" id="delivery-prompt-photo">
+                            <div class="flex flex-col items-center group-hover:text-amber-400 transition" id="delivery-prompt-photo">
                                 <svg class="w-8 h-8 text-slate-500 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Foto Carro Higienizado</span>
                             </div>
                             <img src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" id="delivery-preview-photo">
-                            <button type="button" class="absolute bottom-2 right-2 bg-indigo-600/90 text-white text-[9px] font-extrabold uppercase px-2 py-1 rounded shadow z-20 hover:bg-indigo-500" onclick="mockDeliveryPhoto(event)">MOCK</button>
+                            <button type="button" class="absolute bottom-2 right-2 bg-amber-600/90 text-white text-[9px] font-extrabold uppercase px-2 py-1 rounded shadow z-20 hover:bg-amber-500" onclick="mockDeliveryPhoto(event)">MOCK</button>
                         </div>
 
-                        <button type="button" onclick="checkoutVehicle()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-xl font-bold transition text-xs shadow-lg shadow-emerald-600/15 active:scale-[0.98]">
+                        <button type="button" onclick="checkoutVehicle()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-3.5 rounded-xl font-bold transition text-xs shadow-lg shadow-amber-600/15 active:scale-[0.98]">
                             Liberar Veículo & Entregar Chaves
                         </button>
                     </div>
@@ -701,14 +1011,18 @@
             <!-- 7. DOSSIÊ CLIENTE SCREEN (Dossiê Cliente)                     -->
             <!-- ------------------------------------------------------------- -->
             <section id="screen-dossier" class="screen">
-                <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Dossiê de Auditoria</h1>
-                        <p class="text-slate-400 text-sm md:text-base">Histórico fotográfico inquestionável e linha do tempo de serviços.</p>
+                <!-- Printable/Screen Branding Header -->
+                <div class="mb-6 pb-6 border-b border-slate-800/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <img src="logo.png" class="w-12 h-12 object-contain rounded-xl" alt="CerraCar Logo">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Dossiê de Auditoria</h1>
+                            <p class="text-slate-400 text-xs md:text-sm">Histórico fotográfico inquestionável e linha do tempo de serviços.</p>
+                        </div>
                     </div>
 
-                    <!-- Vehicle Selector inside screen for demo flexibility -->
-                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64">
+                    <!-- Vehicle Selector inside screen for demo flexibility (hidden on print) -->
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 w-full sm:w-64 no-print">
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 0 1-2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 12-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"></path></svg>
                         <select id="dossier-vehicle-select" class="bg-transparent text-white text-xs font-semibold focus:outline-none w-full cursor-pointer">
                             <!-- JS loaded -->
@@ -719,14 +1033,60 @@
                 <!-- Dossier Content Wrapper -->
                 <div class="max-w-3xl mx-auto flex flex-col gap-6">
                     <!-- Target Car Details Card -->
-                    <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center border-l-4 border-l-indigo-500 bg-gradient-to-r from-indigo-950/10 to-slate-900/60">
+                    <div class="glass-card p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center border-l-4 border-l-amber-500 bg-gradient-to-r from-slate-900/40 to-slate-900/60">
                         <div>
                             <h2 id="dossier-car-name" class="text-xl font-bold text-white mb-0.5">Toyota Corolla Altis</h2>
                             <p id="dossier-car-meta" class="text-xs text-slate-400">Proprietário: José da Silva • Entrada: 02/06/2026</p>
                         </div>
                         <div class="mt-3 sm:mt-0 flex items-center gap-2">
                             <span id="dossier-car-plate" class="font-mono bg-slate-950 border border-slate-800 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm">NXP-9852</span>
-                            <span id="dossier-car-status" class="text-[9px] font-extrabold uppercase px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Pronto</span>
+                            <span id="dossier-car-status" class="text-[9px] font-extrabold uppercase px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">Pronto</span>
+                        </div>
+                    </div>
+
+                    <!-- Car Bodywork Damage Mapped (Dossier View) -->
+                    <div id="dossier-bodywork-card" class="glass-card p-6 rounded-2xl hidden flex-col gap-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Mapa Visual de Avarias de Entrada</h3>
+                        <div class="flex flex-col md:flex-row items-center justify-around gap-6">
+                            <div class="bg-slate-950/40 border border-slate-900 rounded-xl p-3.5 flex justify-center items-center">
+                                <svg viewBox="0 0 160 260" class="w-full max-w-[130px] mx-auto select-none" id="dossier-car-damage-svg">
+                                    <defs>
+                                        <pattern id="grid-pattern-dossier" width="10" height="10" patternUnits="userSpaceOnUse">
+                                            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+                                        </pattern>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#grid-pattern-dossier)" rx="8" />
+                                    
+                                    <rect id="dossier-svg-part-roda-fe" x="12" y="45" width="14" height="28" rx="4" class="svg-part-clean"/>
+                                    <rect id="dossier-svg-part-roda-fd" x="134" y="45" width="14" height="28" rx="4" class="svg-part-clean"/>
+                                    <rect id="dossier-svg-part-roda-te" x="12" y="175" width="14" height="28" rx="4" class="svg-part-clean"/>
+                                    <rect id="dossier-svg-part-roda-td" x="134" y="175" width="14" height="28" rx="4" class="svg-part-clean"/>
+
+                                    <path id="dossier-svg-part-parachoque-dian" d="M 35 30 C 55 23, 105 23, 125 30 L 132 40 C 132 40, 110 33, 80 33 C 50 33, 28 40, 28 40 Z" class="svg-part-clean"/>
+                                    <path id="dossier-svg-part-capo" d="M 32 42 L 128 42 L 122 85 L 38 85 Z" class="svg-part-clean"/>
+                                    <path id="dossier-svg-part-parabrisa" d="M 40 89 L 120 89 L 114 110 L 46 110 Z" class="svg-part-clean"/>
+
+                                    <path id="dossier-svg-part-porta-fe" d="M 28 88 L 36 88 L 44 112 L 44 140 L 28 140 Z" class="svg-part-clean"/>
+                                    <path id="dossier-svg-part-porta-fd" d="M 132 88 L 124 88 L 116 112 L 116 140 L 132 140 Z" class="svg-part-clean"/>
+
+                                    <path id="dossier-svg-part-teto" d="M 46 114 L 114 114 L 114 170 L 46 170 Z" class="svg-part-clean"/>
+
+                                    <path id="dossier-svg-part-porta-te" d="M 28 142 L 44 142 L 44 185 L 30 195 Z" class="svg-part-clean"/>
+                                    <path id="dossier-svg-part-porta-td" d="M 132 142 L 116 142 L 116 185 L 130 195 Z" class="svg-part-clean"/>
+
+                                    <path id="dossier-svg-part-vidro-tras" d="M 46 174 L 114 174 L 118 190 L 42 190 Z" class="svg-part-clean"/>
+                                    <path id="dossier-svg-part-parachoque-tras" d="M 32 198 L 128 198 L 124 225 C 105 232, 55 232, 36 225 Z" class="svg-part-clean"/>
+                                    
+                                    <path id="dossier-svg-part-farol-e" d="M 28 42 L 36 42 L 35 46 C 30 46, 28 44, 28 42 Z" class="svg-part-clean"/>
+                                    <path id="dossier-svg-part-farol-d" d="M 132 42 L 124 42 L 125 46 C 130 46, 132 44, 132 42 Z" class="svg-part-clean"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1 space-y-2 text-xs">
+                                <span class="text-slate-500 font-bold uppercase block mb-1">Detalhamento das Avarias Mapeadas:</span>
+                                <div class="grid grid-cols-1 gap-2" id="dossier-damage-legend-list">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -736,10 +1096,14 @@
                     </div>
 
                     <!-- Print/Share Actions -->
-                    <div class="flex gap-4">
-                        <button type="button" id="btn-share-dossier" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/15 active:scale-[0.98]">
+                    <div class="flex gap-4 no-print">
+                        <button type="button" id="btn-share-dossier" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-amber-600/15 active:scale-[0.98]">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.684 10.742l5.132-2.566m0 7.648l-5.132-2.566M19 4a3 3 0 11-6 0 3 3 0 016 0zm-6 8a3 3 0 11-6 0 3 3 0 016 0zm6 8a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             Compartilhar via WhatsApp
+                        </button>
+                        <button type="button" onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 border border-slate-700 active:scale-[0.98]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2m2 4h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2zm8-12V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4h10z"></path></svg>
+                            Imprimir Dossiê Oficial
                         </button>
                     </div>
                 </div>
@@ -775,7 +1139,7 @@
             <!-- Modal control buttons -->
             <div class="flex gap-2">
                 <button type="button" onclick="clearSignatureCanvas()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-xl text-xs transition border border-slate-700">Limpar</button>
-                <button type="button" onclick="saveSignatureAndCompleteCheckin()" class="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl text-xs transition shadow-md shadow-indigo-600/10">Confirmar Check-in</button>
+                <button type="button" onclick="saveSignatureAndCompleteCheckin()" class="flex-[2] bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs transition shadow-md shadow-amber-600/10">Confirmar Check-in</button>
             </div>
         </div>
     </div>
@@ -784,7 +1148,7 @@
     <!-- SUCCESS ANIMATION OVERLAY                  -->
     <!-- ========================================== -->
     <div class="fixed inset-0 z-50 bg-slate-950/95 flex flex-col items-center justify-center p-6 hidden transition-all duration-300" id="success-overlay">
-        <div class="w-20 h-20 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 text-4xl shadow-xl shadow-emerald-500/20 mb-4 animate-bounce">
+        <div class="w-20 h-20 rounded-full bg-amber-500/10 border-2 border-amber-500 flex items-center justify-center text-amber-400 text-4xl shadow-xl shadow-amber-500/20 mb-4 animate-bounce">
             ✓
         </div>
         <h2 class="text-xl font-bold text-white text-center mb-1" id="success-title">Operação Concluída!</h2>
@@ -794,27 +1158,42 @@
     <!-- ========================================== -->
     <!-- FLOATING TOAST NOTIFICATION                -->
     <!-- ========================================== -->
-    <div class="fixed bottom-20 md:bottom-6 right-6 z-50 bg-slate-900 border border-indigo-500 rounded-xl p-3.5 shadow-xl flex items-center gap-2.5 max-w-sm hidden" id="toast">
-        <div class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></div>
+    <div class="fixed bottom-20 md:bottom-6 right-6 z-50 bg-slate-900 border border-amber-500 rounded-xl p-3.5 shadow-xl flex items-center gap-2.5 max-w-sm hidden" id="toast">
+        <div class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></div>
         <p class="text-xs font-semibold text-white" id="toast-message">Notificação de sistema</p>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MAIN APPLICATION LOGIC                     -->
-    <!-- ========================================== -->
     <script>
-        // Pre-defined realistic mock images URLs
+        // Tailwind CDN warning silenced at the top of head
+
+        // Set of mock high quality URLs representing automotive components
         const PHOTOS_MOCK_DATABASE = {
-            frente: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=400",
-            traseira: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=400",
-            esquerda: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=400",
-            direita: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=400",
+            frente: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=600", // Civic/Car front
+            traseira: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=600", // Car rear
+            esquerda: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600", // Car side view
+            direita: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600", // Car side view
             
-            task_old: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=400", // Worn part
-            task_new: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=400", // Shiny box
-            task_done: "https://images.unsplash.com/photo-1617469767053-d3b508a04242?auto=format&fit=crop&q=80&w=400", // Reassembled parts
+            // Suspension / Brake photos
+            task_old: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=400", // worn dirty suspension
+            task_new: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=400", // brand new parts box
+            task_done: "https://images.unsplash.com/photo-1617469767053-d3b508a04242?auto=format&fit=crop&q=80&w=400", // assembled suspension/brakes
             
-            final_delivery: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=500" // Detail clean car
+            // Brake pad specific
+            brake_old: "https://images.unsplash.com/photo-1606577924006-27d39b132ae2?auto=format&fit=crop&q=80&w=400", // rusted worn disc
+            brake_new: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=400", // shiny brake rotor
+            brake_done: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=400", // brakes assembled
+            
+            // Spark plug specific
+            spark_old: "https://images.unsplash.com/photo-1620609355673-3df8a9bf4df4?auto=format&fit=crop&q=80&w=400", // carbon deposits spark plug
+            spark_new: "https://images.unsplash.com/photo-1621259182978-f09e5e2ab090?auto=format&fit=crop&q=80&w=400", // brand new sparking plugs
+            spark_done: "https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&q=80&w=400", // engine head work
+            
+            // AC filter specific
+            ac_old: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=400", // black clogged filter
+            ac_new: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&q=80&w=400", // clean white cabin filter
+            ac_done: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=400", // AC service completed
+            
+            final_delivery: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600" // Shiny clean detailed car
         };
 
         // Static config metadata for screens
@@ -837,9 +1216,9 @@
 
         // Profiles data
         const ROLE_PROFILES = {
-            gerente: { name: "Rodrigo Alencar", title: "Gerente Geral", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100", border: "border-indigo-500" },
-            mecanico: { name: "Marcão Souza", title: "Mecânico Líder", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100", border: "border-emerald-500" },
-            cliente: { name: "Clara G. Silva", title: "Proprietário", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100", border: "border-indigo-400" }
+            gerente: { name: "Rodrigo Alencar", title: "Gerente Geral", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100", border: "border-amber-500" },
+            mecanico: { name: "Marcão Souza", title: "Mecânico Líder", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100", border: "border-amber-500" },
+            cliente: { name: "Clara G. Silva", title: "Proprietário", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100", border: "border-amber-400" }
         };
 
         // Rigorous State Machine Mock Database Seeds
@@ -857,7 +1236,8 @@
                     diagnostico: null,
                     fotos: { frente: null, traseira: null, esquerda: null, direita: null },
                     termoGerado: false,
-                    assinatura: null
+                    assinatura: null,
+                    danos: []
                 },
                 orcamento: null,
                 servico: {
@@ -881,8 +1261,8 @@
                 status: "orcamento", // Fase 2: Precificação (Gerente)
                 checkin: {
                     data: "01/06/2026",
-                    queixa: "Barulho de atrito de metal ao acionar o pedal de freio dianteiro.",
-                    diagnostico: "Pastilhas de freio totalmente desgastadas na traseira e discos ranhurados na dianteira exigindo retífica/troca técnica imediata.",
+                    queixa: "Barulho de atrito de metal ao acionar o freio dianteiro. Volante trepidando levemente em velocidades médias.",
+                    diagnostico: "Desgaste severo das pastilhas dianteiras Brembo. Ranhuras evidentes no disco frontal esquerdo sugerindo retífica imediata para restaurar assentamento plano.",
                     fotos: {
                         frente: PHOTOS_MOCK_DATABASE.frente,
                         traseira: PHOTOS_MOCK_DATABASE.traseira,
@@ -890,13 +1270,17 @@
                         direita: PHOTOS_MOCK_DATABASE.direita
                     },
                     termoGerado: true,
-                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 25 Q 30 10, 50 25 T 90 25' stroke='black' stroke-width='2' fill='none'/></svg>"
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'><path d='M 10 50 Q 30 10 60 80 T 130 30 T 190 60' stroke='%236366f1' stroke-width='3' fill='none' stroke-linecap='round'/></svg>",
+                    danos: [
+                        { part: "Porta Dianteira Esquerda", type: "riscado" },
+                        { part: "Parachoque Traseiro", type: "amassado" }
+                    ]
                 },
-                orcamento: null, // Awaiting prices prefill
+                orcamento: null,
                 servico: {
                     tarefas: [
-                        { id: "t1", descricao: "Troca do Disco e Pastilhas Dianteiras", fotos: { velha: null, nova: null, concluido: null }, concluida: false },
-                        { id: "t2", descricao: "Alinhamento Direcional 3D", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
+                        { id: "t1", descricao: "Substituição do Disco de Freio e Pastilhas Dianteiras", fotos: { velha: null, nova: null, concluido: null }, concluida: false },
+                        { id: "t2", descricao: "Alinhamento Direcional 3D e Balanceamento", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
                     ]
                 },
                 entrega: { checklist: [], fotoFinal: null, dataCheckout: null }
@@ -910,8 +1294,8 @@
                 status: "execucao", // Fase 4: Execução Box (Mecânico)
                 checkin: {
                     data: "02/06/2026",
-                    queixa: "Ruído seco na dianteira ao transpor lombadas.",
-                    diagnostico: "Folga excessiva nas buchas da barra estabilizadora e pastilhas traseiras no limite de segurança.",
+                    queixa: "Barulho seco na suspensão frontal ao passar por desníveis e ondulações do pátio.",
+                    diagnostico: "Folga nas buchas da barra estabilizadora e nas buchas de balança dianteiras. Pastilhas de freio traseiras próximas do limite de espessura.",
                     fotos: {
                         frente: PHOTOS_MOCK_DATABASE.frente,
                         traseira: PHOTOS_MOCK_DATABASE.traseira,
@@ -919,19 +1303,23 @@
                         direita: PHOTOS_MOCK_DATABASE.direita
                     },
                     termoGerado: true,
-                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 30 C 40 10, 60 50, 90 20' stroke='black' stroke-width='2' fill='none'/></svg>"
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'><path d='M 10 30 C 50 80, 80 10, 120 90 C 150 40, 180 50, 190 20' stroke='%236366f1' stroke-width='3' fill='none' stroke-linecap='round'/></svg>",
+                    danos: [
+                        { part: "Parachoque Dianteiro", type: "riscado" },
+                        { part: "Farol Esquerdo", type: "quebrado" }
+                    ]
                 },
                 orcamento: {
                     opcaoSelecionada: "A",
                     valores: {
-                        A: { descricao: "Pastilhas Brembo Premium + Buchas Buchas OEM", total: 2450.00, garantia: "12 Meses", pecas: "Discos Brembo e Pastilhas Cerâmicas Brembo" },
-                        B: { descricao: "Pastilhas Cobreq + Buchas Sampel", total: 1400.00, garantia: "6 Meses", pecas: "Pastilhas Cobreq Cerâmica e Buchas Importadas" },
-                        C: { descricao: "Troca básica das pastilhas e reaperto geral", total: 680.00, garantia: "3 Meses", pecas: "Pastilhas Orgânicas Standard" }
+                        A: { total: 2450.00, garantia: "12 Meses", pecas: "Discos Brembo e Pastilhas Cerâmicas Brembo", descricao: "Pacote Premium Brembo High Performance" },
+                        B: { total: 1400.00, garantia: "6 Meses", pecas: "Pastilhas Cobreq Cerâmica e Buchas Importadas", descricao: "Pacote Custo-Benefício Cobreq" },
+                        C: { total: 680.00, garantia: "3 Meses", pecas: "Pastilhas Orgânicas Standard", descricao: "Pacote Essencial" }
                     }
                 },
                 servico: {
                     tarefas: [
-                        { id: "t1", descricao: "Substituição das Buchas da Barra Estabilizadora", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: null }, concluida: false },
+                        { id: "t1", descricao: "Substituição das Buchas da Barra Estabilizadora", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true },
                         { id: "t2", descricao: "Troca das Pastilhas de Freio Traseiras", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
                     ]
                 },
@@ -946,8 +1334,8 @@
                 status: "pronto_vistoria", // Fase 5: Vistoria & Entrega (Gerente)
                 checkin: {
                     data: "02/06/2026",
-                    queixa: "Ar condicionado não refrigera adequadamente.",
-                    diagnostico: "Filtro de cabine saturado impedindo fluxo de ar e carga de gás baixa devido a micro vazamento na válvula de expansão.",
+                    queixa: "Ar condicionado não gela o habitáculo de forma satisfatória.",
+                    diagnostico: "Filtro de cabine completamente saturado (obstruído), restringindo o fluxo de ventilação. Pressão de gás baixa sugerindo micro vazamento na válvula de expansão.",
                     fotos: {
                         frente: PHOTOS_MOCK_DATABASE.frente,
                         traseira: PHOTOS_MOCK_DATABASE.traseira,
@@ -955,20 +1343,23 @@
                         direita: PHOTOS_MOCK_DATABASE.direita
                     },
                     termoGerado: true,
-                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 20 L 40 40 L 90 10' stroke='black' stroke-width='2' fill='none'/></svg>"
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'><path d='M 10 40 L 50 80 L 100 20 L 140 70 L 190 30' stroke='%236366f1' stroke-width='3' fill='none' stroke-linecap='round'/></svg>",
+                    danos: [
+                        { part: "Capô Dianteiro", type: "amassado" }
+                    ]
                 },
                 orcamento: {
                     opcaoSelecionada: "C",
                     valores: {
-                        A: { descricao: "Troca de Evaporador Premium + Válvula + Carga", total: 2450.00, garantia: "12 Meses", pecas: "Filtro Carbono Ativo + Gás R134a Premium" },
-                        B: { descricao: "Reparo da Válvula + Carga de Gás + Filtro", total: 1400.00, garantia: "6 Meses", pecas: "Filtro Standard + Gás Padrão" },
-                        C: { descricao: "Troca do Filtro de Cabine + Carga R134a", total: 680.00, garantia: "3 Meses", pecas: "Filtro Standard e Gás básico" }
+                        A: { total: 2450.00, garantia: "12 Meses", pecas: "Troca de Evaporador Premium + Válvula + Filtro Ativo", descricao: "Revisão Geral de Climatização Premium" },
+                        B: { total: 1400.00, garantia: "6 Meses", pecas: "Substituição de Válvula + Carga Gás R134a + Filtro Padrão", descricao: "Manutenção Intermediária de Clima" },
+                        C: { total: 680.00, garantia: "3 Meses", pecas: "Troca Filtro Cabine + Carga Gás de Climatização", descricao: "Carga de Gás e Higienização Básica" }
                     }
                 },
                 servico: {
                     tarefas: [
-                        { id: "t1", descricao: "Substituição do Filtro de Cabine e Higienização", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true },
-                        { id: "t2", descricao: "Carga de Gás Refrigerante R134a e Vácuo", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true }
+                        { id: "t1", descricao: "Substituição do Filtro de Cabine e Higienização Química", fotos: { velha: PHOTOS_MOCK_DATABASE.ac_old, nova: PHOTOS_MOCK_DATABASE.ac_new, concluido: PHOTOS_MOCK_DATABASE.ac_done }, concluida: true },
+                        { id: "t2", descricao: "Carga de Gás Refrigerante R134a sob Vácuo", fotos: { velha: PHOTOS_MOCK_DATABASE.ac_old, nova: PHOTOS_MOCK_DATABASE.ac_new, concluido: PHOTOS_MOCK_DATABASE.ac_done }, concluida: true }
                     ]
                 },
                 entrega: { checklist: [], fotoFinal: null, dataCheckout: null }
@@ -982,8 +1373,8 @@
                 status: "pronto", // Completo (delivered)
                 checkin: {
                     data: "31/05/2026",
-                    queixa: "Luz de injeção acesa no painel e falha ao acelerar.",
-                    diagnostico: "Carbonização das velas de ignição devido a combustível adulterado e filtro de combustível saturado.",
+                    queixa: "Luz de injeção eletrônica piscando intermitente e perda súbita de aceleração.",
+                    diagnostico: "Resíduos e carbonização excessiva nas velas de ignição devido a refino de combustível de má qualidade. Filtro de combustível obstruído limitando vazão.",
                     fotos: {
                         frente: PHOTOS_MOCK_DATABASE.frente,
                         traseira: PHOTOS_MOCK_DATABASE.traseira,
@@ -991,20 +1382,23 @@
                         direita: PHOTOS_MOCK_DATABASE.direita
                     },
                     termoGerado: true,
-                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><path d='M10 20 L 40 40 L 90 10' stroke='black' stroke-width='2' fill='none'/></svg>"
+                    assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'><path d='M 10 10 C 60 90, 100 90, 190 20' stroke='%236366f1' stroke-width='3' fill='none' stroke-linecap='round'/></svg>",
+                    danos: [
+                        { part: "Roda Traseira Direita", type: "riscado" }
+                    ]
                 },
                 orcamento: {
                     opcaoSelecionada: "B",
                     valores: {
-                        A: { descricao: "Bobinas ACDelco + Velas Originais Iridium + Filtros", total: 2450.00, garantia: "12 Meses", pecas: "Bobina e Velas ACDelco" },
-                        B: { descricao: "Velas de Ignição Bosch + Filtro Combustível", total: 1400.00, garantia: "6 Meses", pecas: "Velas Bosch + Filtro Fram" },
-                        C: { descricao: "Limpeza das Velas + Substituição do Filtro", total: 680.00, garantia: "3 Meses", pecas: "Filtro Standard" }
+                        A: { total: 2450.00, garantia: "12 Meses", pecas: "Bobinas Originais GM + Velas Iridium ACDelco + Filtro Linha", descricao: "Revisão Mecânica de Ignição Avançada" },
+                        B: { total: 1400.00, garantia: "6 Meses", pecas: "Velas de Ignição Bosch + Filtro de Combustível Fram", descricao: "Substituição Padrão de Velas e Filtros" },
+                        C: { total: 680.00, garantia: "3 Meses", pecas: "Limpeza Química de Velas + Troca do Filtro", descricao: "Ajuste Operativo Emergencial" }
                     }
                 },
                 servico: {
                     tarefas: [
-                        { id: "t1", descricao: "Substituição das Velas de Ignição Bosch", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true },
-                        { id: "t2", descricao: "Substituição do Filtro de Combustível", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true }
+                        { id: "t1", descricao: "Substituição das Velas de Ignição Bosch", fotos: { velha: PHOTOS_MOCK_DATABASE.spark_old, nova: PHOTOS_MOCK_DATABASE.spark_new, concluido: PHOTOS_MOCK_DATABASE.spark_done }, concluida: true },
+                        { id: "t2", descricao: "Substituição do Filtro de Combustível de Linha", fotos: { velha: PHOTOS_MOCK_DATABASE.task_old, nova: PHOTOS_MOCK_DATABASE.task_new, concluido: PHOTOS_MOCK_DATABASE.task_done }, concluida: true }
                     ]
                 },
                 entrega: {
@@ -1028,11 +1422,11 @@
             alerts: []
         };
 
-        // App startup
+        // App startup hook
         window.addEventListener("DOMContentLoaded", () => {
             initDatabase();
             setupRoleSelectors();
-            setupCheckinPhotoZones();
+            setupCheckinBodyMapper();
             setupSignatureCanvas();
             setupPricingSelect();
             setupBudgetSelect();
@@ -1040,7 +1434,7 @@
             setupDeliverySelect();
             setupDossierSelect();
 
-            // Render menus and default screens
+            // Initial view alignment
             syncUINavigation();
             navigateTo(appState.activeScreen);
         });
@@ -1076,26 +1470,30 @@
             const desktopSel = document.getElementById("desktop-role-select");
             const mobileSel = document.getElementById("mobile-role-select");
 
-            desktopSel.value = appState.role;
-            mobileSel.value = appState.role;
+            if (desktopSel) desktopSel.value = appState.role;
+            if (mobileSel) mobileSel.value = appState.role;
 
             const handleRoleChange = (e) => {
                 const newRole = e.target.value;
                 appState.role = newRole;
-                desktopSel.value = newRole;
-                mobileSel.value = newRole;
+                if (desktopSel) desktopSel.value = newRole;
+                if (mobileSel) mobileSel.value = newRole;
                 
                 saveDatabase();
                 syncUINavigation();
 
                 // Update Profile sidebar display block
                 const p = ROLE_PROFILES[newRole];
-                document.getElementById("desktop-profile-name").textContent = p.name;
-                document.getElementById("desktop-profile-title").textContent = p.title;
+                const pName = document.getElementById("desktop-profile-name");
+                const pTitle = document.getElementById("desktop-profile-title");
+                if (pName) pName.textContent = p.name;
+                if (pTitle) pTitle.textContent = p.title;
                 
                 const profileImg = document.getElementById("desktop-profile-img");
-                profileImg.src = p.img;
-                profileImg.className = `w-10 h-10 rounded-full border-2 object-cover ${p.border}`;
+                if (profileImg) {
+                    profileImg.src = p.img;
+                    profileImg.className = `w-10 h-10 rounded-full border-2 object-cover ${p.border}`;
+                }
 
                 // Validate access to current screen
                 const allowed = ROLE_PERMISSIONS[newRole];
@@ -1134,7 +1532,7 @@
                 // Desktop sidebar button
                 const dBtn = document.createElement("button");
                 dBtn.type = "button";
-                dBtn.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition tap-highlight-transparent ${appState.activeScreen === screenId ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'}`;
+                dBtn.className = `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition tap-highlight-transparent ${appState.activeScreen === screenId ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/15' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'}`;
                 dBtn.innerHTML = `${config.icon} <span>${label}</span>`;
                 dBtn.addEventListener("click", () => navigateTo(screenId));
                 dMenu.appendChild(dBtn);
@@ -1142,7 +1540,7 @@
                 // Mobile bottom nav button
                 const mBtn = document.createElement("button");
                 mBtn.type = "button";
-                mBtn.className = `flex flex-col items-center justify-center flex-1 h-full gap-1 tap-highlight-transparent ${appState.activeScreen === screenId ? 'text-indigo-400' : 'text-slate-400'}`;
+                mBtn.className = `flex flex-col items-center justify-center flex-1 h-full gap-1 tap-highlight-transparent ${appState.activeScreen === screenId ? 'text-amber-400' : 'text-slate-400'}`;
                 mBtn.innerHTML = `
                     <div class="${appState.activeScreen === screenId ? 'scale-110' : ''} transition-transform duration-200">
                         ${config.icon}
@@ -1174,6 +1572,70 @@
             if (screenId === "screen-box") renderBox();
             if (screenId === "screen-delivery") renderDelivery();
             if (screenId === "screen-dossier") renderDossier();
+
+            // Refresh progress tracker HUD
+            renderWorkflowHUD();
+        }
+
+        // -------------------------------------------------------------
+        // STATE MACHINE DYNAMIC HUD CONTROLLER
+        // -------------------------------------------------------------
+        function renderWorkflowHUD() {
+            const container = document.getElementById("workflow-hud-container");
+            
+            // Determine active vehicle based on selected dropdown value on current screen
+            let activeVehId = null;
+            if (appState.activeScreen === "screen-pricing") activeVehId = document.getElementById("pricing-vehicle-select").value;
+            if (appState.activeScreen === "screen-budget") activeVehId = document.getElementById("budget-vehicle-select").value;
+            if (appState.activeScreen === "screen-box") activeVehId = document.getElementById("box-vehicle-select").value;
+            if (appState.activeScreen === "screen-delivery") activeVehId = document.getElementById("delivery-vehicle-select").value;
+            if (appState.activeScreen === "screen-dossier") activeVehId = document.getElementById("dossier-vehicle-select").value;
+
+            const v = appState.vehicles.find(veh => veh.id === activeVehId);
+            
+            if (!v || appState.activeScreen === "screen-dashboard" || appState.activeScreen === "screen-checkin") {
+                container.classList.add("hidden");
+                return;
+            }
+
+            container.classList.remove("hidden");
+            
+            // Set header elements
+            document.getElementById("hud-car-plate").textContent = v.placa;
+            document.getElementById("hud-car-name").textContent = v.modelo;
+
+            // Enforce timeline status highlighting index
+            const statuses = ["recepcao", "orcamento", "aguardando_aprovacao", "execucao", "pronto_vistoria", "pronto"];
+            const currentIdx = statuses.indexOf(v.status);
+            
+            // Update line width percentage
+            const progressPct = (currentIdx / (statuses.length - 1)) * 100;
+            document.getElementById("hud-timeline-progress").style.width = `${progressPct}%`;
+
+            statuses.forEach((status, idx) => {
+                const stepEl = document.getElementById(`hud-step-${status}`);
+                if (!stepEl) return;
+
+                const dot = stepEl.querySelector(".step-dot");
+                if (!dot) return;
+                
+                if (idx < currentIdx) {
+                    // Completed step
+                    dot.className = "w-5 h-5 rounded-full flex items-center justify-center bg-amber-500 text-black border border-amber-400 text-[9px] font-extrabold shadow-md shadow-amber-500/20";
+                    stepEl.classList.remove("text-slate-500", "text-amber-400");
+                    stepEl.classList.add("text-amber-400");
+                } else if (idx === currentIdx) {
+                    // Current step
+                    dot.className = "w-5 h-5 rounded-full flex items-center justify-center bg-amber-600 text-white border-2 border-amber-400 text-[9px] font-bold shadow-md shadow-amber-600/30 animate-pulse";
+                    stepEl.classList.remove("text-slate-500", "text-amber-400");
+                    stepEl.classList.add("text-amber-400");
+                } else {
+                    // Future step
+                    dot.className = "w-5 h-5 rounded-full flex items-center justify-center bg-slate-950 text-slate-600 border border-slate-800 text-[9px] font-bold";
+                    stepEl.classList.remove("text-amber-400", "text-amber-400");
+                    stepEl.classList.add("text-slate-500");
+                }
+            });
         }
 
         // -------------------------------------------------------------
@@ -1195,6 +1657,74 @@
             document.getElementById("count-pronto-vistoria").textContent = countVetting;
             document.getElementById("count-pronto").textContent = countDelivered;
 
+            // Render dynamic Donut Segment and Capacity metrics
+            const activeBoxCount = appState.vehicles.filter(v => v.status === "execucao" || v.status === "pronto_vistoria").length;
+            const capacityPct = Math.round((activeBoxCount / 5) * 100);
+            
+            const segmentEl = document.getElementById("dashboard-donut-segment");
+            const capacityTextEl = document.getElementById("dashboard-capacity-text");
+            const activeBoxTextEl = document.getElementById("lbl-box-active");
+            const vagoBoxTextEl = document.getElementById("lbl-box-vago");
+            
+            if (segmentEl && capacityTextEl && activeBoxTextEl && vagoBoxTextEl) {
+                segmentEl.setAttribute("stroke-dasharray", `${capacityPct}, 100`);
+                capacityTextEl.textContent = `${capacityPct}%`;
+                activeBoxTextEl.textContent = `${activeBoxCount} Ativo${activeBoxCount !== 1 ? 's' : ''}`;
+                vagoBoxTextEl.textContent = `${5 - activeBoxCount} Vago${5 - activeBoxCount !== 1 ? 's' : ''}`;
+            }
+
+            // Render Bottlenecks
+            const bottleneckCount = appState.vehicles.filter(v => v.status === "orcamento" || v.status === "aguardando_aprovacao").length;
+            const bAlertEl = document.getElementById("bottleneck-alert");
+            const bTextEl = document.getElementById("bottleneck-text");
+            if (bAlertEl && bTextEl) {
+                if (bottleneckCount > 0) {
+                    bAlertEl.className = "text-[10px] bg-red-500/10 border border-red-500/25 text-red-400 p-2.5 rounded-xl flex items-center gap-2 mt-2";
+                    bTextEl.innerHTML = `<strong>Gargalo Comercial:</strong> ${bottleneckCount} carro${bottleneckCount !== 1 ? 's' : ''} parado${bottleneckCount !== 1 ? 's' : ''} em precificação ou aprovação!`;
+                } else {
+                    bAlertEl.className = "text-[10px] bg-amber-500/10 border border-amber-500/25 text-amber-400 p-2.5 rounded-xl flex items-center gap-2 mt-2";
+                    bTextEl.innerHTML = `<strong>Pátio Estável:</strong> Sem gargalos ativos de aprovação no momento.`;
+                }
+            }
+
+            // Calculate billing tickets
+            let totalApproved = 0;
+            appState.vehicles.forEach(v => {
+                if (["execucao", "pronto_vistoria", "pronto"].includes(v.status) && v.orcamento && v.orcamento.opcaoSelecionada) {
+                    const opt = v.orcamento.opcaoSelecionada;
+                    if (v.orcamento.valores[opt]) {
+                        totalApproved += v.orcamento.valores[opt].total;
+                    }
+                }
+            });
+
+            let totalPotential = 0;
+            appState.vehicles.forEach(v => {
+                if (["recepcao", "orcamento", "aguardando_aprovacao"].includes(v.status)) {
+                    if (v.orcamento && v.orcamento.valores && v.orcamento.valores.A) {
+                        totalPotential += v.orcamento.valores.A.total;
+                    } else {
+                        totalPotential += 2450.00; // Fallback estimate
+                    }
+                }
+            });
+
+            const maxVal = Math.max(totalApproved + totalPotential, 8000);
+            const approvedPct = (totalApproved / maxVal) * 100;
+            const potentialPct = (totalPotential / maxVal) * 100;
+
+            const valApprovedEl = document.getElementById("chart-val-approved");
+            const valPotentialEl = document.getElementById("chart-val-potential");
+            const barApprovedEl = document.getElementById("chart-bar-approved");
+            const barPotentialEl = document.getElementById("chart-bar-potential");
+
+            if (valApprovedEl && valPotentialEl && barApprovedEl && barPotentialEl) {
+                valApprovedEl.textContent = totalApproved.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                valPotentialEl.textContent = totalPotential.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                barApprovedEl.style.width = `${approvedPct}%`;
+                barPotentialEl.style.width = `${potentialPct}%`;
+            }
+
             // Render Commercial alerts
             const alertsContainer = document.getElementById("dashboard-alerts-container");
             alertsContainer.innerHTML = "";
@@ -1208,12 +1738,12 @@
             } else {
                 appState.alerts.forEach(alert => {
                     const card = document.createElement("div");
-                    card.className = "glass-card p-4 rounded-xl flex justify-between items-center bg-gradient-to-r from-slate-900/60 to-indigo-950/10 border-l-2 border-l-indigo-500/80";
+                    card.className = "glass-card p-4 rounded-xl flex justify-between items-center bg-gradient-to-r from-slate-900/60 to-slate-900/40 border-l-2 border-l-amber-500/80";
                     card.innerHTML = `
                         <div class="flex-1 pr-3">
                             <p class="text-xs text-slate-300 leading-relaxed">${alert.text}</p>
                         </div>
-                        <button type="button" class="bg-indigo-600/90 hover:bg-indigo-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shrink-0 transition" onclick="triggerAlertAction('${alert.id}')">Executar</button>
+                        <button type="button" class="bg-amber-600/90 hover:bg-amber-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shrink-0 transition" onclick="triggerAlertAction('${alert.id}')">Executar</button>
                     `;
                     alertsContainer.appendChild(card);
                 });
@@ -1251,16 +1781,16 @@
                         badgeColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
                     } else if (v.status === "aguardando_aprovacao") {
                         label = "Aprovação";
-                        badgeColor = "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20";
+                        badgeColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
                     } else if (v.status === "execucao") {
                         label = "No Box";
-                        badgeColor = "bg-indigo-400/10 text-indigo-300 border border-indigo-400/20";
+                        badgeColor = "bg-amber-500/10 text-amber-300 border border-amber-400/20";
                     } else if (v.status === "pronto_vistoria") {
                         label = "Vistoria";
-                        badgeColor = "bg-teal-500/10 text-teal-400 border border-teal-500/20";
+                        badgeColor = "bg-slate-700/10 text-slate-400 border border-slate-800";
                     } else if (v.status === "pronto") {
                         label = "Entregue";
-                        badgeColor = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                        badgeColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
                     }
 
                     row.innerHTML = `
@@ -1312,7 +1842,7 @@
                 });
             }
 
-            // Re-bind funnel cards filters click
+            // Wire funnel card filters click
             const funnelCards = document.querySelectorAll(".funnel-card");
             funnelCards.forEach(card => {
                 card.replaceWith(card.cloneNode(true));
@@ -1321,16 +1851,16 @@
             document.querySelectorAll(".funnel-card").forEach(card => {
                 const status = card.getAttribute("data-status");
                 if (status === currentStatusFilter) {
-                    card.classList.add("active", "border-indigo-500");
+                    card.classList.add("active", "border-amber-500");
                 } else {
-                    card.classList.remove("active", "border-indigo-500");
+                    card.classList.remove("active", "border-amber-500");
                 }
 
                 card.addEventListener("click", () => {
                     document.querySelectorAll(".funnel-card").forEach(c => {
-                        c.classList.remove("active", "border-indigo-500");
+                        c.classList.remove("active", "border-amber-500");
                     });
-                    card.classList.add("active", "border-indigo-500");
+                    card.classList.add("active", "border-amber-500");
                     renderDashboard();
                 });
             });
@@ -1358,40 +1888,153 @@
         // Helper to change role select components when user clicks operations from details
         function changeRoleBypass(targetRole) {
             appState.role = targetRole;
-            document.getElementById("desktop-role-select").value = targetRole;
-            document.getElementById("mobile-role-select").value = targetRole;
+            const desktopSel = document.getElementById("desktop-role-select");
+            const mobileSel = document.getElementById("mobile-role-select");
+            if (desktopSel) desktopSel.value = targetRole;
+            if (mobileSel) mobileSel.value = targetRole;
             
             const p = ROLE_PROFILES[targetRole];
-            document.getElementById("desktop-profile-name").textContent = p.name;
-            document.getElementById("desktop-profile-title").textContent = p.title;
+            const pName = document.getElementById("desktop-profile-name");
+            const pTitle = document.getElementById("desktop-profile-title");
+            if (pName) pName.textContent = p.name;
+            if (pTitle) pTitle.textContent = p.title;
             
             const profileImg = document.getElementById("desktop-profile-img");
-            profileImg.src = p.img;
-            profileImg.className = `w-10 h-10 rounded-full border-2 object-cover ${p.border}`;
+            if (profileImg) {
+                profileImg.src = p.img;
+                profileImg.className = `w-10 h-10 rounded-full border-2 object-cover ${p.border}`;
+            }
             
             saveDatabase();
             syncUINavigation();
         }
-
         // -------------------------------------------------------------
         // FASE 1: CHECK-IN TÉCNICO (MECÂNICO GATILHO)
         // -------------------------------------------------------------
         let currentCheckinPhotos = { frente: null, traseira: null, esquerda: null, direita: null };
+        let activeDamagedParts = []; // Array of { part: "Part Name", type: "riscado"|"amassado"|"quebrado" }
 
         function renderCheckin() {
-            // Initial reset if navigating clean
+            clearBodyworkDamages();
+            // Reset input values
+            document.getElementById("checkin-placa").value = "";
+            document.getElementById("checkin-modelo").value = "";
+            document.getElementById("checkin-km").value = "";
+            document.getElementById("checkin-cliente").value = "";
+            document.getElementById("checkin-queixa").value = "";
+            document.getElementById("checkin-diagnostico").value = "";
+            
+            // Reset photos
+            currentCheckinPhotos = { frente: null, traseira: null, esquerda: null, direita: null };
+            ["frente", "traseira", "esquerda", "direita"].forEach(z => {
+                const preview = document.getElementById(`checkin-preview-${z}`);
+                const prompt = document.getElementById(`checkin-prompt-${z}`);
+                if (preview) preview.classList.add("hidden");
+                if (prompt) prompt.classList.remove("hidden");
+            });
+        }
+
+        function setupCheckinBodyMapper() {
+            const svg = document.getElementById("car-damage-svg");
+            if (!svg) return;
+
+            // Select all interactive parts
+            const parts = svg.querySelectorAll("[data-part]");
+            parts.forEach(partEl => {
+                // Ensure initial class is clean
+                partEl.setAttribute("class", "svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200");
+
+                // Toggle click handler
+                partEl.addEventListener("click", () => {
+                    const partName = partEl.getAttribute("data-part");
+                    let existing = activeDamagedParts.find(p => p.part === partName);
+
+                    if (!existing) {
+                        // Clean -> Riscado
+                        existing = { part: partName, type: "riscado" };
+                        activeDamagedParts.push(existing);
+                        partEl.setAttribute("class", "svg-part-riscado cursor-pointer transition-all duration-200");
+                    } else if (existing.type === "riscado") {
+                        // Riscado -> Amassado
+                        existing.type = "amassado";
+                        partEl.setAttribute("class", "svg-part-amassado cursor-pointer transition-all duration-200");
+                    } else if (existing.type === "amassado") {
+                        // Amassado -> Quebrado
+                        existing.type = "quebrado";
+                        partEl.setAttribute("class", "svg-part-quebrado cursor-pointer transition-all duration-200");
+                    } else {
+                        // Quebrado -> Clean
+                        activeDamagedParts = activeDamagedParts.filter(p => p.part !== partName);
+                        partEl.setAttribute("class", "svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200");
+                    }
+
+                    refreshCheckinDamageUI();
+                });
+            });
+        }
+
+        function clearBodyworkDamages() {
+            activeDamagedParts = [];
+            const svg = document.getElementById("car-damage-svg");
+            if (svg) {
+                svg.querySelectorAll("[data-part]").forEach(el => {
+                    el.setAttribute("class", "svg-part-clean hover:stroke-amber-400 cursor-pointer transition-colors duration-200");
+                });
+            }
+            refreshCheckinDamageUI();
+        }
+
+        function refreshCheckinDamageUI() {
+            const hud = document.getElementById("damage-warning-hud");
+            const listSpan = document.getElementById("damage-selected-list");
+            const diagInput = document.getElementById("checkin-diagnostico");
+
+            if (activeDamagedParts.length > 0) {
+                hud.classList.remove("hidden");
+                
+                // Format details
+                const labels = activeDamagedParts.map(p => `${p.part} (${p.type.toUpperCase()})`);
+                listSpan.textContent = labels.join(", ");
+                
+                // Prefill technical diagnostic report
+                diagInput.value = "Identificadas avarias na lataria: " + labels.join(", ") + ". ";
+            } else {
+                hud.classList.add("hidden");
+                listSpan.textContent = "Nenhuma avaria marcada";
+                diagInput.value = "";
+            }
         }
 
         function quickFillCheckin() {
-            // Pre-fills form fields with Civic alert data
+            // Reset damages first
+            clearBodyworkDamages();
+
             document.getElementById("checkin-placa").value = "ABC-1234";
             document.getElementById("checkin-modelo").value = "Honda Civic Touring 2021";
             document.getElementById("checkin-km").value = "50000";
             document.getElementById("checkin-cliente").value = "Renato Silva";
-            document.getElementById("checkin-queixa").value = "Ruído metálico forte ao acionar freio, luz de freio piscando.";
-            document.getElementById("checkin-diagnostico").value = "Pastilhas de freio dianteiras totalmente gastas. Discos dianteiros severamente ranhurados precisando de retífica rápida ou substituição total.";
+            document.getElementById("checkin-queixa").value = "Barulho metálico forte ao acionar freio, luz de freio piscando.";
             
-            showToast("Dados do Civic preenchidos com sucesso!");
+            // Set mock damages directly on the SVG car layout
+            activeDamagedParts = [
+                { part: "Parachoque Dianteiro", type: "riscado" },
+                { part: "Roda Dianteira Direita", type: "amassado" }
+            ];
+
+            activeDamagedParts.forEach(d => {
+                const partEl = document.querySelector(`#car-damage-svg [data-part="${d.part}"]`);
+                if (partEl) {
+                    partEl.setAttribute("class", `svg-part-${d.type} cursor-pointer transition-all duration-200`);
+                }
+            });
+
+            // Mock check-in photos
+            ["frente", "traseira", "esquerda", "direita"].forEach(z => {
+                setCheckinPhoto(z, PHOTOS_MOCK_DATABASE[z]);
+            });
+
+            refreshCheckinDamageUI();
+            showToast("Civic preenchido com fotos e avarias no mapa!");
         }
 
         function triggerCheckinFile(direction) {
@@ -1458,7 +2101,7 @@
                 drawCtx.beginPath();
                 drawCtx.moveTo(lastDrawX, lastDrawY);
                 drawCtx.lineTo(pos.x, pos.y);
-                drawCtx.strokeStyle = "#1e293b";
+                drawCtx.strokeStyle = "#171717";
                 drawCtx.lineWidth = 3.5;
                 drawCtx.lineCap = "round";
                 drawCtx.stroke();
@@ -1466,17 +2109,19 @@
                 lastDrawY = pos.y;
             }
 
-            function stopDraw() {
-                drawingActive = false;
-            }
+            // Window mouse listeners (stop drawing when pointer leaves canvas bounds)
+            window.addEventListener("mouseup", stopDraw);
 
             drawCanvas.onmousedown = startDraw;
             drawCanvas.onmousemove = draw;
-            window.addEventListener("mouseup", stopDraw);
 
             drawCanvas.ontouchstart = startDraw;
             drawCanvas.ontouchmove = draw;
             drawCanvas.ontouchend = stopDraw;
+        }
+
+        function stopDraw() {
+            drawingActive = false;
         }
 
         function triggerSignatureModal() {
@@ -1492,7 +2137,7 @@
                 return;
             }
 
-            // Exige ao menos uma foto do carro antes de assinar
+            // Require at least one entry photo
             const hasPhotos = Object.values(currentCheckinPhotos).some(p => p !== null);
             if (!hasPhotos) {
                 showToast("Por favor, anexe ao menos uma foto do carro para auditoria.");
@@ -1621,6 +2266,7 @@
             const select = document.getElementById("pricing-vehicle-select");
             select.addEventListener("change", () => {
                 renderPricingDetails(select.value);
+                renderWorkflowHUD();
             });
         }
 
@@ -1747,6 +2393,7 @@
             const select = document.getElementById("budget-vehicle-select");
             select.addEventListener("change", () => {
                 renderBudgetDetails(select.value);
+                renderWorkflowHUD();
             });
         }
 
@@ -1788,13 +2435,27 @@
             document.getElementById("budget-optA-title").textContent = valA.descricao;
             document.getElementById("budget-optA-warranty").textContent = valA.garantia;
 
+            // Fill custom details inside budget lists
+            document.getElementById("budget-optA-features").innerHTML = `
+                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> ${valA.pecas}</li>
+                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Fluidos de Alta Performance Assegurados</li>
+                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Lavagem Geral e Alinhamento Cortesia</li>
+            `;
+
             document.getElementById("budget-optB-price").textContent = valB.total.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
             document.getElementById("budget-optB-title").textContent = valB.descricao;
             document.getElementById("budget-optB-warranty").textContent = valB.garantia;
+            document.getElementById("budget-optB-features").innerHTML = `
+                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> ${valB.pecas}</li>
+                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Limpeza Técnica do Sistema</li>
+            `;
 
             document.getElementById("budget-optC-price").textContent = valC.total.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
             document.getElementById("budget-optC-title").textContent = valC.descricao;
             document.getElementById("budget-optC-warranty").textContent = valC.garantia;
+            document.getElementById("budget-optC-features").innerHTML = `
+                <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> ${valC.pecas}</li>
+            `;
         }
 
         function approveBudget(optionCode) {
@@ -1831,6 +2492,7 @@
             const select = document.getElementById("box-vehicle-select");
             select.addEventListener("change", () => {
                 renderBoxTasks(select.value);
+                renderWorkflowHUD();
             });
         }
 
@@ -1871,7 +2533,7 @@
 
             v.servico.tarefas.forEach(task => {
                 const card = document.createElement("div");
-                card.className = `glass-card p-5 rounded-2xl flex flex-col gap-4 border-l-4 transition ${task.concluida ? 'border-l-emerald-500 bg-emerald-950/5' : 'border-l-indigo-500'}`;
+                card.className = `glass-card p-5 rounded-2xl flex flex-col gap-4 border-l-4 transition ${task.concluida ? 'border-l-amber-500 bg-amber-950/5' : 'border-l-slate-700'}`;
                 
                 // Count uploads
                 if (task.fotos.velha) filledSlots++;
@@ -1881,7 +2543,7 @@
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${task.concluida ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-indigo-400 border border-indigo-500/20'}">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${task.concluida ? 'bg-amber-500 text-black' : 'bg-slate-800 text-amber-400 border border-amber-500/20'}">
                                 ${task.concluida ? '✓' : '!'}
                             </div>
                             <h4 class="text-xs font-bold text-white">${task.descricao}</h4>
@@ -1891,30 +2553,30 @@
 
                     <div class="grid grid-cols-3 gap-3">
                         <!-- Peça Velha -->
-                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'velha')">
+                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-amber-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'velha')">
                             <input type="file" accept="image/*" class="hidden" id="file-${task.id}-velha" onchange="handleTaskFileSelect(event, '${task.id}', 'velha')">
                             <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">1. Peça Velha</span>
                             <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                             ${task.fotos.velha ? `<img src="${task.fotos.velha}" class="absolute inset-0 w-full h-full object-cover z-10">` : ''}
-                            <button type="button" class="absolute bottom-1 right-1 bg-indigo-600/90 text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockTaskPhoto(event, '${task.id}', 'velha')">MOCK</button>
+                            <button type="button" class="absolute bottom-1 right-1 bg-amber-600/90 text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockTaskPhoto(event, '${task.id}', 'velha')">MOCK</button>
                         </div>
 
                         <!-- Peça Nova -->
-                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'nova')">
+                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-amber-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'nova')">
                             <input type="file" accept="image/*" class="hidden" id="file-${task.id}-nova" onchange="handleTaskFileSelect(event, '${task.id}', 'nova')">
                             <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">2. Peça Nova</span>
                             <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                             ${task.fotos.nova ? `<img src="${task.fotos.nova}" class="absolute inset-0 w-full h-full object-cover z-10">` : ''}
-                            <button type="button" class="absolute bottom-1 right-1 bg-indigo-600/90 text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockTaskPhoto(event, '${task.id}', 'nova')">MOCK</button>
+                            <button type="button" class="absolute bottom-1 right-1 bg-amber-600/90 text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockTaskPhoto(event, '${task.id}', 'nova')">MOCK</button>
                         </div>
 
                         <!-- Instalada -->
-                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'concluido')">
+                        <div class="relative aspect-square border border-dashed border-slate-800 hover:border-amber-500 rounded-xl flex flex-col items-center justify-center p-1 text-center bg-slate-950/40 cursor-pointer overflow-hidden" onclick="triggerTaskUpload('${task.id}', 'concluido')">
                             <input type="file" accept="image/*" class="hidden" id="file-${task.id}-concluido" onchange="handleTaskFileSelect(event, '${task.id}', 'concluido')">
                             <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">3. Instalada</span>
                             <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                             ${task.fotos.concluido ? `<img src="${task.fotos.concluido}" class="absolute inset-0 w-full h-full object-cover z-10">` : ''}
-                            <button type="button" class="absolute bottom-1 right-1 bg-indigo-600/90 text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded shadow z-20 hover:bg-indigo-500" onclick="mockTaskPhoto(event, '${task.id}', 'concluido')">MOCK</button>
+                            <button type="button" class="absolute bottom-1 right-1 bg-amber-600/90 text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded shadow z-20 hover:bg-amber-500" onclick="mockTaskPhoto(event, '${task.id}', 'concluido')">MOCK</button>
                         </div>
                     </div>
                 `;
@@ -1931,7 +2593,7 @@
             const footerBtnWrapper = document.createElement("div");
             footerBtnWrapper.className = "mt-2";
             footerBtnWrapper.innerHTML = `
-                <button type="button" class="w-full py-3.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 active:scale-[0.98] ${progressVal === 100 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'}" ${progressVal === 100 ? '' : 'disabled'}>
+                <button type="button" class="w-full py-3.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 active:scale-[0.98] ${progressVal === 100 ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/20' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'}" ${progressVal === 100 ? '' : 'disabled'}>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Finalizar Manutenção (Liberar Box)
                 </button>
@@ -1965,6 +2627,24 @@
 
             saveTaskPhoto(taskId, photoType, mockUrl);
             showToast(`Foto do box para ${photoType} simulada!`);
+        }
+
+        function mockAllTasksPhotos() {
+            const select = document.getElementById("box-vehicle-select");
+            const v = appState.vehicles.find(veh => veh.id === select.value);
+            if (!v) return;
+
+            // Fill all photos for all tasks
+            v.servico.tarefas.forEach(t => {
+                t.fotos.velha = PHOTOS_MOCK_DATABASE.task_old;
+                t.fotos.nova = PHOTOS_MOCK_DATABASE.task_new;
+                t.fotos.concluido = PHOTOS_MOCK_DATABASE.task_done;
+                t.concluida = true;
+            });
+
+            saveDatabase();
+            renderBoxTasks(v.id);
+            showToast("Evidências fotográficas da O.S. preenchidas!");
         }
 
         function saveTaskPhoto(taskId, photoType, dataUrl) {
@@ -2016,6 +2696,7 @@
             const select = document.getElementById("delivery-vehicle-select");
             select.addEventListener("change", () => {
                 renderDeliveryDetails(select.value);
+                renderWorkflowHUD();
             });
         }
 
@@ -2136,6 +2817,7 @@
             const select = document.getElementById("dossier-vehicle-select");
             select.addEventListener("change", () => {
                 renderDossierDetails(select.value);
+                renderWorkflowHUD();
             });
 
             document.getElementById("btn-share-dossier").addEventListener("click", () => {
@@ -2179,6 +2861,66 @@
             document.getElementById("dossier-car-plate").textContent = v.placa;
             document.getElementById("dossier-car-meta").textContent = `Cliente: ${v.cliente} • KM: ${parseInt(v.km).toLocaleString('pt-BR')} KM`;
 
+            // Render damages on dossier SVG
+            const bodyworkCard = document.getElementById("dossier-bodywork-card");
+            const legendList = document.getElementById("dossier-damage-legend-list");
+            
+            // First reset all classes on the dossier SVG
+            const dSvg = document.getElementById("dossier-car-damage-svg");
+            if (dSvg) {
+                dSvg.querySelectorAll("[id^='dossier-svg-part-']").forEach(el => {
+                    el.setAttribute("class", "svg-part-clean");
+                });
+            }
+
+            if (v.checkin && v.checkin.danos && v.checkin.danos.length > 0) {
+                bodyworkCard.classList.remove("hidden");
+                bodyworkCard.classList.add("flex");
+                legendList.innerHTML = "";
+
+                v.checkin.danos.forEach(d => {
+                    // Update classes on SVG element
+                    // Map name to SVG id suffixes
+                    let suffix = "";
+                    if (d.part === "Roda Dianteira Esquerda") suffix = "roda-fe";
+                    else if (d.part === "Roda Dianteira Direita") suffix = "roda-fd";
+                    else if (d.part === "Roda Traseira Esquerda") suffix = "roda-te";
+                    else if (d.part === "Roda Traseira Direita") suffix = "roda-td";
+                    else if (d.part === "Parachoque Dianteiro") suffix = "parachoque-dian";
+                    else if (d.part === "Capô Dianteiro") suffix = "capo";
+                    else if (d.part === "Para-brisa") suffix = "parabrisa";
+                    else if (d.part === "Porta Dianteira Esquerda") suffix = "porta-fe";
+                    else if (d.part === "Porta Dianteira Direita") suffix = "porta-fd";
+                    else if (d.part === "Painel do Teto") suffix = "teto";
+                    else if (d.part === "Porta Traseira Esquerda") suffix = "porta-te";
+                    else if (d.part === "Porta Traseira Direita") suffix = "porta-td";
+                    else if (d.part === "Vidro Traseiro") suffix = "vidro-tras";
+                    else if (d.part === "Parachoque Traseiro") suffix = "parachoque-tras";
+                    else if (d.part === "Farol Esquerdo") suffix = "farol-e";
+                    else if (d.part === "Farol Direito") suffix = "farol-d";
+
+                    if (suffix) {
+                        const el = document.getElementById(`dossier-svg-part-${suffix}`);
+                        if (el) {
+                            el.setAttribute("class", `svg-part-${d.type}`);
+                        }
+                    }
+
+                    // Append item to legend list
+                    const legItem = document.createElement("div");
+                    let colorDot = "bg-amber-500";
+                    if (d.type === "amassado") colorDot = "bg-red-500";
+                    if (d.type === "quebrado") colorDot = "bg-red-600 animate-pulse";
+                    
+                    legItem.className = "flex items-center gap-2 text-slate-300 font-medium";
+                    legItem.innerHTML = `<span class="w-2 h-2 rounded-full ${colorDot}"></span> <span class="text-white font-bold">${d.part}:</span> <span class="capitalize text-slate-400">${d.type}</span>`;
+                    legendList.appendChild(legItem);
+                });
+            } else {
+                bodyworkCard.classList.add("hidden");
+                bodyworkCard.classList.remove("flex");
+            }
+
             const statusBadge = document.getElementById("dossier-car-status");
             let label = "Check-in";
             let badgeClass = "bg-orange-500/10 text-orange-400 border-orange-500/20";
@@ -2187,16 +2929,16 @@
                 badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
             } else if (v.status === "aguardando_aprovacao") {
                 label = "Aprovação";
-                badgeClass = "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
+                badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
             } else if (v.status === "execucao") {
                 label = "No Box";
-                badgeClass = "bg-indigo-400/10 text-indigo-300 border-indigo-400/20";
+                badgeClass = "bg-amber-500/10 text-amber-300 border-amber-400/20";
             } else if (v.status === "pronto_vistoria") {
                 label = "Vistoria";
-                badgeClass = "bg-teal-500/10 text-teal-400 border-teal-500/20";
+                badgeClass = "bg-slate-700/10 text-slate-400 border-slate-800";
             } else if (v.status === "pronto") {
                 label = "Entregue";
-                badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
             }
             statusBadge.className = `text-[9px] font-extrabold uppercase px-2.5 py-1.5 rounded-lg border ${badgeClass}`;
             statusBadge.textContent = label;
@@ -2210,8 +2952,8 @@
                 const item = document.createElement("div");
                 item.className = "relative pb-4";
                 item.innerHTML = `
-                    <span class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 flex items-center justify-center text-[9px] text-black font-extrabold">✓</span>
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-emerald-400">Etapa 1 • Vistoria de Entrada</span>
+                    <span class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-amber-500 ring-4 ring-amber-500/20 flex items-center justify-center text-[9px] text-black font-extrabold">✓</span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-amber-400">Etapa 1 • Vistoria de Entrada</span>
                     <h4 class="text-xs font-bold text-white mt-0.5">Check-in Técnico Registrado</h4>
                     <p class="text-slate-400 text-[11px] mt-1">Data: <strong>${v.checkin.data}</strong></p>
                     
@@ -2279,10 +3021,10 @@
             let budgetSubtitleClass = "text-slate-500";
 
             if (hasApproved) {
-                budgetBadge = "bg-emerald-500 ring-4 ring-emerald-500/20 text-black animate-pulse";
+                budgetBadge = "bg-amber-500 ring-4 ring-amber-500/20 text-black";
                 budgetBadgeText = "✓";
                 budgetTitleClass = "text-white";
-                budgetSubtitleClass = "text-emerald-400";
+                budgetSubtitleClass = "text-amber-400";
             } else if (hasBudgetBuilt) {
                 budgetBadge = "bg-amber-500 ring-4 ring-amber-500/20 text-black";
                 budgetBadgeText = "●";
@@ -2297,7 +3039,7 @@
                 budgetContentHtml = `
                     <p class="text-slate-400 text-[11px] mt-1">Orçamento aprovado pelo cliente: <strong>Opção ${opt} - ${detail.descricao}</strong>.</p>
                     <p class="text-slate-400 text-[11px] mt-0.5">Insumos autorizados: <em>${detail.pecas}</em></p>
-                    <div class="text-sm font-bold text-indigo-400 mt-1.5">Total Autorizado: R$ ${detail.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                    <div class="text-sm font-bold text-amber-400 mt-1.5">Total Autorizado: R$ ${detail.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
                 `;
             } else if (hasBudgetBuilt) {
                 budgetContentHtml = `<p class="text-slate-400 text-[11px] mt-1">Orçamento elaborado pelo gerente comercial. Aguardando aprovação do cliente.</p>`;
@@ -2325,15 +3067,15 @@
             let serviceSubtitleClass = "text-slate-500";
 
             if (allTasksCompleted) {
-                serviceBadge = "bg-emerald-500 ring-4 ring-emerald-500/20 text-black";
+                serviceBadge = "bg-amber-500 ring-4 ring-amber-500/20 text-black";
                 serviceBadgeText = "✓";
                 serviceTitleClass = "text-white";
-                serviceSubtitleClass = "text-emerald-400";
+                serviceSubtitleClass = "text-amber-400";
             } else if (hasStartedService) {
-                serviceBadge = "bg-indigo-600 ring-4 ring-indigo-600/20 text-white";
+                serviceBadge = "bg-amber-600 ring-4 ring-amber-500/20 text-white";
                 serviceBadgeText = "●";
                 serviceTitleClass = "text-white";
-                serviceSubtitleClass = "text-indigo-400";
+                serviceSubtitleClass = "text-amber-400";
             }
 
             let serviceContentHtml = `<p class="text-slate-500 text-[11px] mt-1">Aguardando início dos serviços de reparo no Box.</p>`;
@@ -2345,7 +3087,7 @@
                     serviceContentHtml += `
                         <div class="mt-2.5 p-3 bg-slate-900/60 border border-slate-800 rounded-xl space-y-2 text-[11px]">
                             <div class="flex items-center gap-2">
-                                <span class="text-xs ${t.concluida ? 'text-emerald-400' : 'text-indigo-400'}">${t.concluida ? '●' : '○'}</span>
+                                <span class="text-xs ${t.concluida ? 'text-amber-400' : 'text-amber-400'}">${t.concluida ? '●' : '○'}</span>
                                 <h5 class="font-bold text-white">${t.descricao}</h5>
                             </div>
                             ${hasPhotos ? `
@@ -2387,9 +3129,9 @@
             let deliverySubtitleClass = "text-slate-500";
 
             if (hasDelivered) {
-                deliveryBadge = "bg-emerald-500 ring-4 ring-emerald-500/20 text-black";
+                deliveryBadge = "bg-amber-500 ring-4 ring-amber-500/20 text-black";
                 deliveryTitleClass = "text-white";
-                deliverySubtitleClass = "text-emerald-400";
+                deliverySubtitleClass = "text-amber-400";
             }
 
             let deliveryContentHtml = `<p class="text-slate-500 text-[11px] mt-1">Aguardando vistoria final de liberação do gerente.</p>`;
@@ -2397,7 +3139,7 @@
                 deliveryContentHtml = `
                     <p class="text-slate-400 text-[11px] mt-1">Vistoria finalizada em <strong>${v.entrega.dataCheckout}</strong>. Veículo higienizado e entregue em perfeitas condições.</p>
                     <div class="mt-2 text-[10px] text-slate-400 p-2.5 bg-slate-900/60 border border-slate-800 rounded-xl max-w-sm">
-                        <span class="text-emerald-400 font-bold block mb-1">Qualidade Assegurada:</span>
+                        <span class="text-amber-400 font-bold block mb-1">Qualidade Assegurada:</span>
                         <ul class="list-disc pl-4 space-y-0.5">
                             ${v.entrega.checklist.map(item => `<li>${item}</li>`).join("")}
                         </ul>
@@ -2442,6 +3184,268 @@
                 if (onComplete) onComplete();
             }, 1850);
         }
+
+        // -------------------------------------------------------------
+        // SALES DEMO PRESENTER BAR LOGIC
+        // -------------------------------------------------------------
+        function toggleDemoPanel() {
+            const panel = document.getElementById("demo-actions-panel");
+            if (panel) panel.classList.toggle("hidden");
+        }
+
+        function demoResetSystem() {
+            localStorage.removeItem("cerracar_rigid_state");
+            appState.role = "gerente";
+            appState.activeScreen = "screen-dashboard";
+            initDatabase();
+            
+            // Sync UI role inputs
+            document.getElementById("desktop-role-select").value = "gerente";
+            document.getElementById("mobile-role-select").value = "gerente";
+            changeRoleBypass("gerente");
+            
+            navigateTo("screen-dashboard");
+            
+            showSuccessOverlay(
+                "Demo Resetada!",
+                "O banco de dados do localStorage foi limpo para os padrões iniciais.",
+                () => {
+                    toggleDemoPanel();
+                }
+            );
+        }
+
+        function demoAdvanceCivic() {
+            // Find Civic in recepcao (check-in)
+            const c = appState.vehicles.find(v => v.placa === "ABC-1234");
+            if (!c) {
+                showToast("Honda Civic não encontrado!");
+                return;
+            }
+
+            if (c.status !== "recepcao") {
+                showToast("Civic já passou da fase de Check-in!");
+                return;
+            }
+
+            // Fill checkin data and promote
+            c.status = "orcamento";
+            c.checkin = {
+                data: new Date().toLocaleDateString('pt-BR'),
+                queixa: "Barulho metálico forte ao acionar freio, pedal um pouco baixo.",
+                diagnostico: "Desgaste total das pastilhas de freio dianteiras. Discos com ranhuras profundas e espessura abaixo do limite tolerável.",
+                fotos: {
+                    frente: PHOTOS_MOCK_DATABASE.frente,
+                    traseira: PHOTOS_MOCK_DATABASE.traseira,
+                    esquerda: PHOTOS_MOCK_DATABASE.esquerda,
+                    direita: PHOTOS_MOCK_DATABASE.direita
+                },
+                termoGerado: true,
+                assinatura: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'><path d='M 10 50 C 40 20, 80 80, 190 40' stroke='%236366f1' stroke-width='3.5' fill='none' stroke-linecap='round'/></svg>",
+                danos: [
+                    { part: "Parachoque Dianteiro", type: "riscado" },
+                    { part: "Roda Dianteira Direita", type: "amassado" }
+                ]
+            };
+
+            // Remove alert
+            appState.alerts = appState.alerts.filter(a => a.id !== "al-civic");
+
+            saveDatabase();
+            
+            showSuccessOverlay(
+                "Check-in do Civic!",
+                "Vistoria salva, assinatura colhida e promovido para Precificação.",
+                () => {
+                    toggleDemoPanel();
+                    changeRoleBypass("gerente");
+                    navigateTo("screen-pricing");
+                    // Select civic
+                    const select = document.getElementById("pricing-vehicle-select");
+                    if (select) {
+                        select.value = c.id;
+                        renderPricingDetails(c.id);
+                    }
+                    renderWorkflowHUD();
+                }
+            );
+        }
+
+        function demoAdvanceCompass() {
+            // Find Compass in orcamento (pricing)
+            const c = appState.vehicles.find(v => v.placa === "KGA-7422");
+            if (!c) {
+                showToast("Jeep Compass não encontrado!");
+                return;
+            }
+
+            if (c.status !== "orcamento") {
+                showToast("Compass já passou da fase de Precificação!");
+                return;
+            }
+
+            // Fill pricing inputs and promote
+            c.status = "aguardando_aprovacao";
+            c.orcamento = {
+                opcaoSelecionada: null,
+                valores: {
+                    A: { total: 2450.00, pecas: "Discos de Freio Ventilados Brembo + Pastilhas de Cerâmica Brembo", garantia: "12 Meses", descricao: "Opção Premium Brembo High Performance" },
+                    B: { total: 1400.00, pecas: "Pastilhas Cobreq Cerâmica + Retífica Geral de Discos", garantia: "6 Meses", descricao: "Opção Custo-Benefício Cobreq" },
+                    C: { total: 680.00, pecas: "Pastilhas Orgânicas Standard", garantia: "3 Meses", descricao: "Opção Básica de Reposição" }
+                }
+            };
+
+            // Seed tasks
+            c.servico.tarefas = [
+                { id: "t1", descricao: "Substituição do Disco de Freio e Pastilhas Dianteiras", fotos: { velha: null, nova: null, concluido: null }, concluida: false },
+                { id: "t2", descricao: "Alinhamento Direcional 3D e Balanceamento", fotos: { velha: null, nova: null, concluido: null }, concluida: false }
+            ];
+
+            // Create alert
+            appState.alerts.push({
+                id: "al-decision-" + c.id,
+                text: `O orçamento do veículo <strong>${c.modelo} (${c.placa})</strong> está disponível. Aprove a sua opção de preferência.`,
+                actionScreen: "screen-budget",
+                vehicleId: c.id
+            });
+
+            saveDatabase();
+
+            showSuccessOverlay(
+                "Compass Precificado!",
+                "Orçamento gerado pelo gerente e disponibilizado para aprovação do cliente.",
+                () => {
+                    toggleDemoPanel();
+                    changeRoleBypass("cliente");
+                    navigateTo("screen-budget");
+                    const select = document.getElementById("budget-vehicle-select");
+                    if (select) {
+                        select.value = c.id;
+                        renderBudgetDetails(c.id);
+                    }
+                    renderWorkflowHUD();
+                }
+            );
+        }
+
+        function demoAdvanceCorolla() {
+            // Find Corolla in execution box
+            const c = appState.vehicles.find(v => v.placa === "NXP-9852");
+            if (!c) {
+                showToast("Toyota Corolla não encontrado!");
+                return;
+            }
+
+            if (c.status !== "execucao") {
+                showToast("Corolla já passou da fase de Execução!");
+                return;
+            }
+
+            // Fill OS photo uploads and promote to vistoria
+            c.status = "pronto_vistoria";
+            c.servico.tarefas.forEach(t => {
+                t.fotos.velha = PHOTOS_MOCK_DATABASE.brake_old;
+                t.fotos.nova = PHOTOS_MOCK_DATABASE.brake_new;
+                t.fotos.concluido = PHOTOS_MOCK_DATABASE.brake_done;
+                t.concluida = true;
+            });
+
+            saveDatabase();
+
+            showSuccessOverlay(
+                "O.S. do Corolla Concluída!",
+                "Evidências fotográficas enviadas pelo mecânico e carro pronto para Vistoria.",
+                () => {
+                    toggleDemoPanel();
+                    changeRoleBypass("gerente");
+                    navigateTo("screen-delivery");
+                    const select = document.getElementById("delivery-vehicle-select");
+                    if (select) {
+                        select.value = c.id;
+                        renderDeliveryDetails(c.id);
+                    }
+                    renderWorkflowHUD();
+                }
+            );
+        }
+
+        function demoAdvanceHB20() {
+            // Find HB20 in ready vetting
+            const c = appState.vehicles.find(v => v.placa === "HB-2026");
+            if (!c) {
+                showToast("Hyundai HB20 não encontrado!");
+                return;
+            }
+
+            if (c.status !== "pronto_vistoria") {
+                showToast("HB20 já passou da fase de Vistoria!");
+                return;
+            }
+
+            // Check quality checklist and promote to Delivered (pronto)
+            c.status = "pronto";
+            c.entrega = {
+                checklist: ["Rodas Apertadas com Torquímetro", "Níveis de Fluidos e Sangria", "Higienização e Lavagem Ecológica", "Teste de Rodagem Concluído", "Recolhimento de Ferramentas"],
+                fotoFinal: PHOTOS_MOCK_DATABASE.final_delivery,
+                dataCheckout: new Date().toLocaleDateString('pt-BR')
+            };
+
+            saveDatabase();
+
+            showSuccessOverlay(
+                "HB20 Liberado!",
+                "Checklist de qualidade auditado e chaves entregues. Dossiê gerado.",
+                () => {
+                    toggleDemoPanel();
+                    changeRoleBypass("gerente");
+                    navigateTo("screen-dossier");
+                    const select = document.getElementById("dossier-vehicle-select");
+                    if (select) {
+                        select.value = c.id;
+                        renderDossierDetails(c.id);
+                    }
+                    renderWorkflowHUD();
+                }
+            );
+        }
     </script>
+
+    <!-- ========================================== -->
+    <!-- DEMO PRESENTER TOOLBAR (no-print)          -->
+    <!-- ========================================== -->
+    <div class="demo-toolbar no-print" id="demo-toolbar-container">
+        <!-- Main Float Button -->
+        <button type="button" onclick="toggleDemoPanel()" class="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 to-amber-600 hover:scale-105 active:scale-95 transition-all text-white flex items-center justify-center shadow-lg shadow-amber-500/30 font-bold text-lg select-none" title="Painel de Demonstração">
+            ⚡
+        </button>
+        
+        <!-- Collapsible Actions Panel -->
+        <div id="demo-actions-panel" class="hidden absolute bottom-14 right-0 bg-slate-900/95 border border-slate-800 backdrop-blur-md p-4 rounded-2xl w-60 flex flex-col gap-2.5 shadow-2xl text-slate-100">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider">Ações de Demonstração</h4>
+                <span class="text-[9px] font-bold bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded uppercase">Vendas</span>
+            </div>
+            
+            <button type="button" onclick="demoResetSystem()" class="text-left text-[10px] font-bold hover:bg-slate-800/60 p-2 rounded-lg transition border border-slate-800 flex items-center gap-2 w-full text-amber-400">
+                🔄 Resetar Banco de Dados
+            </button>
+            <button type="button" onclick="demoAdvanceCivic()" class="text-left text-[10px] font-semibold hover:bg-slate-800/60 p-2 rounded-lg transition flex items-center gap-2 w-full">
+                ⚡ 1. Check-in Rápido (Civic)
+            </button>
+            <button type="button" onclick="demoAdvanceCompass()" class="text-left text-[10px] font-semibold hover:bg-slate-800/60 p-2 rounded-lg transition flex items-center gap-2 w-full">
+                ⚡ 2. Precificar Rápido (Compass)
+            </button>
+            <button type="button" onclick="demoAdvanceCorolla()" class="text-left text-[10px] font-semibold hover:bg-slate-800/60 p-2 rounded-lg transition flex items-center gap-2 w-full">
+                ⚡ 3. Executar Rápido (Corolla)
+            </button>
+            <button type="button" onclick="demoAdvanceHB20()" class="text-left text-[10px] font-semibold hover:bg-slate-800/60 p-2 rounded-lg transition flex items-center gap-2 w-full">
+                ⚡ 4. Liberar Rápido (HB20)
+            </button>
+            
+            <div class="text-[8px] text-slate-500 text-center font-bold tracking-wide mt-1">
+                Use para acelerar transições na apresentação.
+            </div>
+        </div>
+    </div>
 </body>
 </html>
